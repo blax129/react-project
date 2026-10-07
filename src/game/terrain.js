@@ -1,4 +1,4 @@
-import { hardship } from './areas';
+import { hardship, areaAt, AREA_LENGTH } from './areas';
 import { METERS } from './constants';
 
 export const CHALLENGE_START = 1100;
@@ -78,7 +78,23 @@ export function groundY(x) {
   // Broad linking hills replace long recovery flats while keeping a short start.
   const rollingFade=smooth(clamp01((x-650)/700));
   const linkingHills=(Math.sin((x-650)/155)*(17+hard*14))*rollingFade;
-  return 340-baseRoll-obstacle-linkingHills;
+  // Later circuits add short hill pairs between the existing major obstacles.
+  const comboFade=smooth(clamp01((x-9900)/6000));
+  // The smaller wave requires repeated throttle and landing adjustments.
+  const combos=Math.sin(x/94)*14*comboFade;
+  // Combine the teachable opening with denser late-game climbs.
+  // Each neighbourhood adds a different signed road texture to the shared course.
+  const area=areaAt(x), local=((Math.max(0,x)%AREA_LENGTH)/AREA_LENGTH);
+  // A fourth-power envelope makes height and slope continuous at every area join.
+  const envelope=Math.sin(Math.PI*local)**4*smooth(clamp01((x-700)/500));
+  // Vary the number and position of surface features across the thirty stops.
+  const wave=Math.sin(local*Math.PI*2*area.terrainWaves+area.index*.37);
+  // Depressions, humps and rollers need different throttle and landing decisions.
+  const shape=area.roadStyle==='potholes'?-wave*wave:area.roadStyle==='humps'?wave*wave:area.roadStyle==='rumble'?Math.sin(local*Math.PI*14):wave;
+  // Bound the added geometry so the scene identity does not introduce vertical walls.
+  const localRoad=shape*area.terrainAmplitude*envelope;
+  // The final road includes both progressive difficulty and local obstacle character.
+  return 340-baseRoll-obstacle-linkingHills-combos-localRoad;
 }
 
 export function groundSlope(x) {

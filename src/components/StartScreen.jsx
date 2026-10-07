@@ -1,8 +1,13 @@
+// Explain landscape play before the player starts the countdown.
+import RotateTip from "./RotateTip";
 // React state for the ride in the middle of the slideshow.
 import { useEffect, useState } from "react";
 // The sound switch.
-import MuteButton from "./MuteButton";
+// Share the same sound settings menu as the driving dashboard.
+import SettingsButton from "./SettingsButton";
 import ShareButton from "./ShareButton";
+// Preview all thirty researched Lagos-inspired locations.
+import RouteGuide from "./RouteGuide";
 // The rides, ratings, and the browser key for the last pick.
 import { VEHICLE_KEY, VEHICLES, getVehicle, vehicleRatings } from "../game/vehicles";
 
@@ -109,9 +114,11 @@ export default function StartScreen({ muted, onToggleMute, onStart, onBoard }) {
       <h1>Korope</h1>
       {/* What the player is about to do. */}
       <p className="lead">
-        Take on Lagos hills. Pick your ride, time your climbs, and see how far you can go.
+        Drive through 30 Lagos-inspired areas, from Festac through Iyana Iba to Ikeja. Pick your ride and make every drop of fuel count.
       {/* Closes this sentence. */}
       </p>
+      {/* Show the orientation advice early on portrait phones. */}
+      <RotateTip />
       {/* The ride picker heading. */}
       <h2>Choose your ride</h2>
       {/* Previous, current, and next, with arrow buttons. */}
@@ -175,6 +182,10 @@ export default function StartScreen({ muted, onToggleMute, onStart, onBoard }) {
         <li>Let go of the gas before a steep lip. A tilt in the air is safe. You lose only if you land upside down.</li>
         {/* Pause. */}
         <li>Press P, or the Pause button, to pause and resume.</li>
+        {/* Explain how to respond to the newly marked road hazards. */}
+        <li>Carry momentum through mud; sustained Gas burns extra fuel. Crawl over sharp debris or jump clear. Green repair stops seal leaks and restore 20% fuel.</li>
+        {/* Police reward a controlled stop instead of a fast barrier impact. */}
+        <li>At police checkpoints, brake, release Gas, and stop briefly for the barrier to open. Ramming the gate wastes 12% fuel.</li>
       {/* Closes the control list. */}
       </ul>
       {/* Where scores go. */}
@@ -196,8 +207,10 @@ export default function StartScreen({ muted, onToggleMute, onStart, onBoard }) {
         {/* Closes the button. */}
         </button>
         {/* Turns sound on or off. */}
-        <MuteButton muted={muted} onToggle={onToggleMute} />
+        <SettingsButton muted={muted} onToggleMute={onToggleMute} />
         <ShareButton />
+        {/* Browse local scenery and driving advice before setting off. */}
+        <RouteGuide />
       {/* Closes this box. */}
       </div>
     {/* Closes this card. */}

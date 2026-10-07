@@ -1,12 +1,18 @@
+// Paint expanding exhaust behind the sprite using world-space particle positions.
+import { drawExhaust } from "./exhaust";
 // The picture size, the camera, and the tire positions.
 import { CAM_X, CAM_Y, WORLD_H, WORLD_W } from "./constants";
 // The road height, so the hills and the cans sit on the same curve the physics uses.
 import { groundY } from "./world";
 // The Lagos stretch the korope is driving through.
+// Detailed cached architecture gives every stop its own visual identity.
+import { drawAreaScenery } from "./scenery";
 import { AREAS, areaAt } from "./areas";
 // The ride the player picked, and its picture size.
 import { getVehicle } from "./vehicles";
 
+// Draw the same fixed hazards that the physics uses.
+import { hazardsNear } from "./hazards";
 import { vehicleImages } from "./vehicleImages";
 function spriteFor(vehicle) { return vehicleImages.get(vehicle.url); }
 
@@ -17,7 +23,7 @@ export function drawWorld(ctx, run, paused, vehicleId) {
   // The sky stays fixed to the screen. The hills move under it.
   drawSky(ctx, area);
   // Buildings drift at a fraction of the camera, so they feel far away.
-  drawBuildings(ctx, (run.x - CAM_X) * 0.18, area);
+  drawAreaScenery(ctx, (run.x - area.from) * 0.18, area);
   // 0.35 is faster than the buildings, so the poles slide past them.
   drawWires(ctx, (run.x - CAM_X) * 0.35);
   // 0.55 is the go-slow lane, closer than the skyline.
@@ -34,8 +40,12 @@ export function drawWorld(ctx, run, paused, vehicleId) {
   drawRoadside(ctx, run);
   // A board at each boundary, with the name of the next area.
   drawSigns(ctx, run);
+  // Road hazards are clearly marked before the vehicle passes them.
+  drawHazards(ctx, run);
   // Cans that have not been collected.
   drawCans(ctx, run);
+  // Exhaust is visual only and follows the same camera as the vehicle.
+  drawExhaust(ctx, run.exhaust);
   // The ride the player picked, tilted with its wheels.
   drawVehicle(ctx, run, vehicleId);
   // Back to screen coordinates for the pause label.
@@ -298,11 +308,10 @@ function drawRoadside(ctx, run) {
       // Skip the other kinds.
       continue;
     }
-    // A stack of yellow jerry cans by the roadside.
-    // The first can.
-    drawJerry(ctx, x - 8, y - 28);
-    // The second can, a little to the right.
-    drawJerry(ctx, x + 10, y - 28);
+    // Neutral crates replace decorative fuel cans so collectibles remain unambiguous.
+    ctx.fillStyle = areaAt(x).accent; ctx.fillRect(x - 16, y - 22, 30, 22);
+    // A lighter crate edge suggests stacked roadside goods.
+    ctx.strokeStyle = "#d4bb8f"; ctx.strokeRect(x - 16, y - 22, 30, 22);
   }
 }
 
@@ -439,7 +448,7 @@ function drawJerry(ctx, x, y) {
 function drawSigns(ctx, run) {
   // Every named stretch after the start.
   AREAS.forEach((area) => {
-    // CMS is the opening. It has no entry board.
+    // Festac First Gate is the opening and needs no transition board.
     if (area.from < 100) {
       // Skip it.
       return;
@@ -461,14 +470,14 @@ function drawSigns(ctx, run) {
     ctx.fillRect(area.from - 3, y - 64, 6, 64);
     // The board.
     ctx.fillStyle = "#fff8ee";
-    // Wide enough for the longest name here, Lekki and Obalende.
-    ctx.fillRect(area.from + 8, y - 72, 150, 28);
+    // A larger sign accommodates the new neighbourhood names.
+    ctx.fillRect(area.from + 8, y - 72, 235, 28);
     // The name.
     ctx.fillStyle = "#1c140f";
     // A plain label.
     ctx.font = "700 16px Outfit, sans-serif";
     // Sits inside the board.
-    ctx.fillText(area.name, area.from + 16, y - 52);
+    ctx.textAlign = "left"; ctx.fillText(area.name, area.from + 16, y - 52, 218);
   });
 }
 
@@ -519,4 +528,101 @@ function drawPaused(ctx) {
   const width = ctx.measureText(label).width;
   // Centers it. 230 is a little above the middle.
   ctx.fillText(label, (WORLD_W - width) / 2, 230);
+}
+
+// Draw visible road hazards using high-contrast labels and simple shapes.
+function drawHazards(ctx, run) {
+  // Custom test roads do not contain main-route hazards.
+  if (!run.hazardsEnabled) return;
+  // Only draw features inside or just beyond the camera view.
+  for (const hazard of hazardsNear(run.x, 420, 750)) {
+    // Save colours and line settings for the next drawing function.
+    ctx.save();
+    // Road patches follow the actual slope instead of floating over hills.
+    if (hazard.type === 'mud' || hazard.type === 'debris') {
+      // Mud is brown; sharp debris is bright orange.
+      ctx.strokeStyle = hazard.type === 'mud' ? '#775136' : '#ffbd72';
+      // Thick patches remain visible on phone screens.
+      ctx.lineWidth = hazard.type === 'mud' ? 14 : 7;
+      // Begin the road-following patch.
+      ctx.beginPath();
+      // Sample the same road curve used by collision detection.
+      for (let x = hazard.x; x <= hazard.x + hazard.width; x += 10) {
+        // Start or extend the patch along the surface.
+        if (x === hazard.x) ctx.moveTo(x, groundY(x) - 3); else ctx.lineTo(x, groundY(x) - 3);
+      // Finish sampling the patch.
+      }
+      // Paint the road hazard.
+      ctx.stroke();
+      // Draw raised triangles to distinguish debris from ordinary dirt.
+      if (hazard.type === 'debris') {
+        // Bright metal stays visible against night-time terrain.
+        ctx.fillStyle = '#ffd4a0';
+        // Place several visible spikes across the patch.
+        for (let x = hazard.x; x < hazard.x + hazard.width; x += 20) {
+          // Position each triangle on the road.
+          const y = groundY(x);
+          // Outline a short, sharp piece of debris.
+          ctx.beginPath(); ctx.moveTo(x - 6, y); ctx.lineTo(x, y - 13); ctx.lineTo(x + 6, y); ctx.closePath();
+          // Fill the triangle.
+          ctx.fill();
+        // Finish the debris pieces.
+        }
+      // Finish debris-specific drawing.
+      }
+    // Finish the road patch.
+    }
+    // Put the sign above the feature's starting point.
+    const y = groundY(hazard.x);
+    // Repair signs are green; police signs are blue; hazards use amber.
+    ctx.fillStyle = hazard.type === 'repair' ? '#145c43' : hazard.type === 'police' ? '#163b67' : '#50381e';
+    // Choose a compact label that explains the visible object.
+    const label = hazard.type === 'police' ? 'POLICE · STOP' : hazard.type === 'repair' ? 'REPAIR +20' : hazard.type === 'mud' ? 'MUD' : 'SHARP DEBRIS';
+    // Give each warning a dark backing for readability.
+    ctx.fillRect(hazard.x - 24, y - 95, 150, 29);
+    // Use light text on every sign.
+    ctx.fillStyle = '#ffffff'; ctx.font = 'bold 15px sans-serif'; ctx.textAlign = 'center';
+    // Centre the warning inside its backing.
+    ctx.fillText(label, hazard.x + 51, y - 75);
+    // Police checkpoints include a visible striped barrier and officer.
+    if (hazard.type === 'police') {
+      // Match the physical stopping line.
+      const x = hazard.x + hazard.width, road = groundY(x);
+      // A dark post supports the barrier.
+      ctx.fillStyle = '#dce7ef'; ctx.fillRect(x - 4, road - 58, 8, 58);
+      // Raise the barrier for a cleared checkpoint.
+      const cleared = run.clearedCheckpoints.has(hazard.id);
+      // Rotate the arm around the post when inspection is complete.
+      ctx.save(); ctx.translate(x, road - 52); ctx.rotate(cleared ? Math.PI / 2 : 0);
+      // Draw the white gate arm pointing toward the approaching car.
+      ctx.fillStyle = '#ffffff'; ctx.fillRect(-85, -5, 88, 10);
+      // Red stripes make the barrier unmistakable.
+      ctx.fillStyle = '#cf4646';
+      // Repeat stripes along the arm.
+      for (let stripe = -80; stripe < 0; stripe += 20) ctx.fillRect(stripe, -5, 10, 10);
+      // Restore the normal road coordinates.
+      ctx.restore();
+      // Draw the officer's uniform beside the checkpoint.
+      ctx.fillStyle = '#14212d'; ctx.fillRect(hazard.x + 16, y - 43, 16, 30);
+      // Draw the officer's head.
+      ctx.fillStyle = '#865336'; ctx.beginPath(); ctx.arc(hazard.x + 24, y - 51, 8, 0, Math.PI * 2); ctx.fill();
+      // Add a cap and two legs.
+      ctx.fillStyle = '#14212d'; ctx.fillRect(hazard.x + 15, y - 61, 18, 5); ctx.fillRect(hazard.x + 16, y - 13, 6, 13); ctx.fillRect(hazard.x + 26, y - 13, 6, 13);
+    // Finish the checkpoint illustration.
+    }
+    // Repair stations show whether their emergency supply has already been used.
+    if (hazard.type === 'repair') {
+      // Used stops are muted; fresh stops remain bright green.
+      ctx.fillStyle = run.serviced.has(hazard.id) ? '#687a71' : '#67e3aa';
+      // Draw a simple roadside service box.
+      ctx.fillRect(hazard.x + 15, y - 52, 34, 48);
+      // A dark plus symbol marks repair and emergency fuel.
+      ctx.fillStyle = '#12372a'; ctx.fillRect(hazard.x + 29, y - 43, 6, 27); ctx.fillRect(hazard.x + 20, y - 33, 24, 6);
+    // Finish the service box.
+    }
+    // Restore the drawing state for the next feature.
+    ctx.restore();
+  // Finish the visible hazard list.
+  }
+// Finish road hazard drawing.
 }

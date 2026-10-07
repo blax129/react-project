@@ -1,3 +1,7 @@
+// A prominent orientation reminder is shared with the opening screen.
+import RotateTip from "./components/RotateTip";
+// The opening HUD label follows the researched route instead of a hard-coded old name.
+import { areaLabel } from "./game/areas";
 import { terrainCue } from "./game/terrain";
 // React state and the pedal flags that the canvas reads every frame.
 import { useEffect, useLayoutEffect, useRef, useState } from "react";
@@ -37,8 +41,8 @@ export default function App() {
   const [score, setScore] = useState(0);
   // The tank, from 0 to 100. The road updates this with the score.
   const [fuel, setFuel] = useState(100);
-  // The part of Lagos on screen. The road starts at CMS.
-  const [area, setArea] = useState("CMS");
+  // The part of Lagos on screen. The road starts at Festac First Gate.
+  const [area, setArea] = useState(areaLabel(40));
   const [challenge, setChallenge] = useState(() => terrainCue(40));
   // "flip" or "fuel", shown on the end card.
   const [endReason, setEndReason] = useState("");
@@ -88,8 +92,8 @@ export default function App() {
     setScore(0);
     // A full tank.
     setFuel(100);
-    // The ride opens in CMS.
-    setArea("CMS");
+    // The ride opens in Festac First Gate.
+    setArea(areaLabel(40));
     setChallenge(terrainCue(40));
     // Clears a leftover crash reason from a previous end card.
     setEndReason("");
@@ -186,8 +190,8 @@ export default function App() {
     setScore(0);
     // A full tank.
     setFuel(100);
-    // The new ride opens in CMS.
-    setArea("CMS");
+    // The new ride opens in Festac First Gate.
+    setArea(areaLabel(40));
     setChallenge(terrainCue(40));
     // The end card closes.
     setPhase("running");
@@ -210,6 +214,13 @@ export default function App() {
     // Returns to the start card or the run that was already open.
     setScreen(returnTo);
   // Closes the block above.
+  }
+
+  // Pause only an active run before opening Settings; Resume remains explicit.
+  function onOpenSettings() {
+    // Pausing also clears any held keyboard or touch pedals on the next frame.
+    if (phaseRef.current === "running") onTogglePause();
+  // Finish the settings-open handler.
   }
 
   // The page.
@@ -242,10 +253,12 @@ export default function App() {
             onTogglePause={onTogglePause}
             // Sound on and sound off.
             onToggleMute={onToggleMute}
+            // Freeze driving while the settings dialog is open.
+            onOpenSettings={onOpenSettings}
           />
           {/* A short control reminder. Hidden on short phones so the road keeps the space. */}
           <p className="terrain-cue">{challenge}</p>
-          <p className="rotate-tip">Turn your phone sideways for a bigger road.</p>
+          <RotateTip />
           <p className="hint">Left brakes, then reverses. Right drives. Gas and Brake tilt in the air. P pauses.</p>
           {/* The moving road. runId starts a fresh run. */}
           <GameCanvas

@@ -15,6 +15,8 @@ import { hardship } from "./areas";
 // The ride the player picked, and its handling numbers.
 import { getVehicle } from "./vehicles";
 
+// Deterministic hazards add traction, fuel, and checkpoint decisions.
+import { activeHazard, stepHazards } from "./hazards";
 import { groundY, groundSlope } from "./terrain";
 export { groundY, groundSlope } from "./terrain";
 
@@ -27,6 +29,18 @@ export function createRun(vehicleId, terrain = { heightAt: groundY, slopeAt: gro
     // Which ride this is, so every frame can read its handling.
     vehicleId: vehicle.id,
     terrain,
+    // Only the real route contains its fixed road hazards.
+    hazardsEnabled: terrain.heightAt === groundY,
+    // Track ongoing fuel damage until the next repair stop.
+    leaking: false,
+    // Remember one-time penalties and services to prevent repeat farming.
+    hazardsHit: new Set(),
+    // Each repair stop can supply emergency fuel once.
+    serviced: new Set(),
+    // Police clearance survives reversing through the same checkpoint.
+    clearedCheckpoints: new Set(),
+    // Accumulate the time spent stopped for an inspection.
+    checkpointWait: 0,
     wheels: vehicle.wheels,
     // Along the road.
     x: 40,
@@ -105,7 +119,7 @@ export function reseat(run) {
 // Budget stops by each vehicle's cruising range, rather than its current tank.
 // Stops stay fixed once planned: no moving pickups or reversing exploits.
 export function fuelStopGap(vehicle, x = 0) {
-  return Math.max(650, Math.min(2100, vehicle.maxSpeed * .48 / vehicle.fuelBurn * 30)) * (1 + hardship(x) * .12);
+  return Math.max(650, Math.min(2100, vehicle.maxSpeed * .48 / vehicle.fuelBurn * 30)) * (1 + hardship(x) * .12) * (1 + Math.min(.3, Math.max(0, x - 10000) / 50000));
 }
 function firstFuelStop(vehicle) { return 40 + fuelStopGap(vehicle) * 1.15; }
 export function placeFuelStop(terrain, target) {
@@ -160,6 +174,8 @@ export function stepRun(run, dt, controls) {
   // Either back control is enough to roll the other way.
   const backHeld = Boolean(controls.brake) || Boolean(controls.left);
   const grounded = run.wheels.some(w => tireSunk(run, w) > -2);
+  // Mud only changes traction while a tire touches the road.
+  const mud = grounded && activeHazard(run, "mud");
   const first = run.wheels[0], last = run.wheels.at(-1);
   // Align to the wheel footprint, not a single bump below the centre.
   const hill = Math.atan2(roadY(run.x+last.x)-roadY(run.x+first.x)
@@ -174,7 +190,7 @@ export function stepRun(run, dt, controls) {
   if (grounded && drive) {
     const uphillLoad = Math.max(0, -Math.sin(hill) * drive);
     const cruiseLoad = Math.min(1, Math.abs(tangentSpeed) / vehicle.maxSpeed);
-    run.fuel = Math.max(0,run.fuel-vehicle.fuelBurn*(.65 + cruiseLoad*.25 + uphillLoad*.5)*step);
+    run.fuel = Math.max(0,run.fuel-vehicle.fuelBurn*(.65 + cruiseLoad*.25 + uphillLoad*.5)*(mud ? 2.4 : 1)*step);
   }
 
   // In the air the pedals spin the ride. On the road they lean it and also drive.
@@ -218,14 +234,14 @@ export function stepRun(run, dt, controls) {
     run.vy += Math.sin(hill)*change;
   } else if (grounded && drive) {
     const lowGear = drive > 0 ? 1 + .45 * Math.max(0, 1 - Math.abs(tangentSpeed)/100) : 1;
-    const push = vehicle.accel * lowGear * (drive < 0 ? 0.65 : 1) * drive * step;
+    const push = vehicle.accel * lowGear * (mud ? 1 - .28 * Math.min(1, Math.abs(tangentSpeed)/120) : 1) * (drive < 0 ? 0.65 : 1) * drive * step;
     run.vx += Math.cos(hill)*push;
     run.vy += Math.sin(hill)*push;
   }
   // Tires scrub speed. Air does not.
   if (grounded) {
     // Drag for this short step, stronger on heavy rides.
-    const drag = Math.exp(-vehicle.drag * step);
+    const drag = Math.exp(-vehicle.drag * (mud ? 2.2 : 1) * step);
     // Slows the horizontal part.
     run.vx *= drag;
     // Slows the vertical part.
@@ -315,6 +331,9 @@ export function stepRun(run, dt, controls) {
     // Tells the screen.
     return "crash";
   }
+
+  // Apply road hazards after movement and before fuel pickup or empty-tank checks.
+  stepHazards(run, step, run.wheels.some(w => tireSunk(run, w) > -2), controls);
 
   // Picks up a can when the body is close to it.
   let picked = false;

@@ -1,7 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import MuteButton from "./MuteButton";
+// Open sound preferences without crowding the driving controls.
+import SettingsButton from "./SettingsButton";
 
-export default function Hud({ score, fuel, area, paused, muted, onTogglePause, onToggleMute }) {
+export default function Hud({ score, fuel, area, paused, muted, onTogglePause, onToggleMute, onOpenSettings }) {
   const previous = useRef(fuel);
   const [refilled, setRefilled] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
@@ -45,7 +46,8 @@ export default function Hud({ score, fuel, area, paused, muted, onTogglePause, o
     </div>
     <div className="actions hud-actions">
       <button className="button ghost" type="button" onClick={onTogglePause}>{paused ? "Resume" : "Pause"}</button>
-      <MuteButton muted={muted} onToggle={onToggleMute} />
+      {/* Opening settings pauses the run before showing the sound controls. */}
+      <SettingsButton muted={muted} onToggleMute={onToggleMute} onOpen={onOpenSettings} />
       <button className="button ghost fullscreen-button" type="button" onClick={toggleFullscreen}>{fullscreen ? "Exit full screen" : "Full screen"}</button>
     </div>
     {screenHint && <div className="screen-hint" role="status">{screenHint}<button type="button" onClick={() => setScreenHint("")} aria-label="Dismiss fullscreen tip">×</button></div>}

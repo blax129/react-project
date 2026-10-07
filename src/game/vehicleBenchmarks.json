@@ -6,10 +6,10 @@
     "economy": 116.08,
     "brakingDistance": 20.48,
     "tankSeconds": 34.72,
-    "openingDistance": 9368.1,
+    "openingDistance": 6189.6,
     "openingSeconds": 30.01,
     "openingEnd": "30-second limit",
-    "pickups": 2
+    "pickups": 1
   },
   "okada": {
     "speed": 398.93,
@@ -18,8 +18,8 @@
     "economy": 181.33,
     "brakingDistance": 21.43,
     "tankSeconds": 45.45,
-    "openingDistance": 2119.3,
-    "openingSeconds": 5.98,
+    "openingDistance": 2077.4,
+    "openingSeconds": 5.88,
     "openingEnd": "flip",
     "pickups": 0
   },
@@ -30,10 +30,10 @@
     "economy": 94.98,
     "brakingDistance": 20.32,
     "tankSeconds": 25,
-    "openingDistance": 10570.2,
-    "openingSeconds": 30.01,
-    "openingEnd": "30-second limit",
-    "pickups": 2
+    "openingDistance": 2070.1,
+    "openingSeconds": 6.25,
+    "openingEnd": "flip",
+    "pickups": 0
   },
   "molue": {
     "speed": 296.31,
@@ -42,7 +42,7 @@
     "economy": 47.79,
     "brakingDistance": 27.54,
     "tankSeconds": 16.13,
-    "openingDistance": 4635.7,
+    "openingDistance": 4462.3,
     "openingSeconds": 30.01,
     "openingEnd": "30-second limit",
     "pickups": 4
@@ -54,10 +54,10 @@
     "economy": 115.8,
     "brakingDistance": 17.46,
     "tankSeconds": 23.81,
-    "openingDistance": 8622.9,
-    "openingSeconds": 18.82,
+    "openingDistance": 2190.5,
+    "openingSeconds": 5.18,
     "openingEnd": "flip",
-    "pickups": 1
+    "pickups": 0
   },
   "delivery": {
     "speed": 360.92,
@@ -66,8 +66,8 @@
     "economy": 78.46,
     "brakingDistance": 21.1,
     "tankSeconds": 21.74,
-    "openingDistance": 2091.8,
-    "openingSeconds": 6.78,
+    "openingDistance": 2070.6,
+    "openingSeconds": 6.68,
     "openingEnd": "flip",
     "pickups": 0
   },
@@ -78,7 +78,7 @@
     "economy": 39.25,
     "brakingDistance": 23.38,
     "tankSeconds": 16.67,
-    "openingDistance": 6537.9,
+    "openingDistance": 6189.1,
     "openingSeconds": 30.01,
     "openingEnd": "30-second limit",
     "pickups": 4
@@ -90,10 +90,10 @@
     "economy": 78.02,
     "brakingDistance": 18.54,
     "tankSeconds": 17.86,
-    "openingDistance": 11911.2,
+    "openingDistance": 6189.5,
     "openingSeconds": 30.01,
     "openingEnd": "30-second limit",
-    "pickups": 3
+    "pickups": 2
   },
   "dangote": {
     "speed": 197.46,
@@ -102,10 +102,10 @@
     "economy": 26.68,
     "brakingDistance": 31.7,
     "tankSeconds": 13.51,
-    "openingDistance": 5101.5,
+    "openingDistance": 4938.6,
     "openingSeconds": 30.01,
     "openingEnd": "30-second limit",
-    "pickups": 5
+    "pickups": 6
   },
   "police": {
     "speed": 410.33,
@@ -114,10 +114,10 @@
     "economy": 85.49,
     "brakingDistance": 18.64,
     "tankSeconds": 20.83,
-    "openingDistance": 2105.5,
-    "openingSeconds": 5.88,
-    "openingEnd": "flip",
-    "pickups": 0
+    "openingDistance": 6189.6,
+    "openingSeconds": 30.01,
+    "openingEnd": "30-second limit",
+    "pickups": 1
   },
   "lexus": {
     "speed": 448.34,
@@ -126,10 +126,10 @@
     "economy": 89.67,
     "brakingDistance": 18.06,
     "tankSeconds": 20,
-    "openingDistance": 12286.3,
-    "openingSeconds": 30.01,
-    "openingEnd": "30-second limit",
-    "pickups": 3
+    "openingDistance": 2133.4,
+    "openingSeconds": 5.48,
+    "openingEnd": "flip",
+    "pickups": 0
   },
   "fayawo": {
     "speed": 463.54,
@@ -138,8 +138,8 @@
     "economy": 85.84,
     "brakingDistance": 19.63,
     "tankSeconds": 18.52,
-    "openingDistance": 2132.9,
-    "openingSeconds": 5.33,
+    "openingDistance": 2146.1,
+    "openingSeconds": 5.36,
     "openingEnd": "flip",
     "pickups": 0
   },
@@ -150,10 +150,10 @@
     "economy": 193.92,
     "brakingDistance": 19.06,
     "tankSeconds": 52.08,
-    "openingDistance": 2055,
-    "openingSeconds": 6.29,
-    "openingEnd": "flip",
-    "pickups": 0
+    "openingDistance": 6189.6,
+    "openingSeconds": 30.01,
+    "openingEnd": "30-second limit",
+    "pickups": 1
   },
   "brt": {
     "speed": 273.5,
@@ -162,10 +162,10 @@
     "economy": 42.73,
     "brakingDistance": 26.37,
     "tankSeconds": 15.63,
-    "openingDistance": 5807.9,
+    "openingDistance": 5577.9,
     "openingSeconds": 30.01,
     "openingEnd": "30-second limit",
-    "pickups": 4
+    "pickups": 5
   },
   "peugeot": {
     "speed": 387.53,
@@ -174,10 +174,10 @@
     "economy": 88.07,
     "brakingDistance": 20.59,
     "tankSeconds": 22.73,
-    "openingDistance": 10764.1,
-    "openingSeconds": 30.01,
-    "openingEnd": "30-second limit",
-    "pickups": 2
+    "openingDistance": 2104.4,
+    "openingSeconds": 6.28,
+    "openingEnd": "flip",
+    "pickups": 0
   },
   "purewater": {
     "speed": 334.32,
@@ -186,8 +186,8 @@
     "economy": 66.86,
     "brakingDistance": 22.1,
     "tankSeconds": 20,
-    "openingDistance": 2063,
-    "openingSeconds": 7.2,
+    "openingDistance": 2066.7,
+    "openingSeconds": 7.22,
     "openingEnd": "flip",
     "pickups": 0
   },
@@ -198,10 +198,10 @@
     "economy": 52.22,
     "brakingDistance": 23.66,
     "tankSeconds": 25,
-    "openingDistance": 5765,
+    "openingDistance": 5655.1,
     "openingSeconds": 30.01,
     "openingEnd": "30-second limit",
-    "pickups": 2
+    "pickups": 3
   },
   "benzgle": {
     "speed": 463.54,
@@ -210,10 +210,10 @@
     "economy": 79.92,
     "brakingDistance": 17.97,
     "tankSeconds": 17.24,
-    "openingDistance": 10958.9,
-    "openingSeconds": 25.63,
-    "openingEnd": "flip",
-    "pickups": 3
+    "openingDistance": 6189.1,
+    "openingSeconds": 30.01,
+    "openingEnd": "30-second limit",
+    "pickups": 2
   },
   "benzcoupe": {
     "speed": 478.74,
@@ -222,9 +222,9 @@
     "economy": 79.79,
     "brakingDistance": 17.4,
     "tankSeconds": 16.67,
-    "openingDistance": 13166.5,
-    "openingSeconds": 30.01,
-    "openingEnd": "30-second limit",
-    "pickups": 3
+    "openingDistance": 2170.6,
+    "openingSeconds": 5.2,
+    "openingEnd": "flip",
+    "pickups": 0
   }
 }

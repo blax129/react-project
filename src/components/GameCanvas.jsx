@@ -1,3 +1,9 @@
+// Countdown time and visual exhaust stay separate from driving physics.
+import { createCountdown } from "../game/countdown";
+// Update bounded, vehicle-specific smoke only during active driving.
+import { createExhaust, stepExhaust } from "../game/exhaust";
+// Road hazards override normal hill advice while a decision is close.
+import { hazardCue } from "../game/hazards";
 import { terrainCue } from "../game/terrain";
 import { createSimulationClock } from "../game/simulationClock";
 import { createInputState, GAS_KEYS, BRAKE_KEYS } from "../game/controls";
@@ -8,7 +14,7 @@ import { WORLD_H, WORLD_W } from "../game/constants";
 // One frame of movement, and the whole-number score.
 import { createRun, shownScore, stepRun } from "../game/world";
 // The Lagos name at the korope's position.
-import { areaAt } from "../game/areas";
+import { areaLabel } from "../game/areas";
 // The drawing function.
 import { drawWorld } from "../game/draw";
 // The beeps.
@@ -22,6 +28,8 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
   // The canvas element.
   const canvasRef = useRef(null);
   const [assetState, setAssetState] = useState("loading");
+  // Display the countdown only after the vehicle image has decoded.
+  const [countdown, setCountdown] = useState(3);
   const [retry, setRetry] = useState(0);
   const readyRef = useRef(false);
   const visibleRef = useRef(visible);
@@ -65,6 +73,11 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
     const ctx = canvas.getContext("2d");
     // A new run with the ride the player picked.
     const run = createRun(vehicleRef.current);
+    // Each restart gets fresh particles and a complete countdown.
+    run.exhaust = createExhaust();
+    const launch = createCountdown();
+    const vehicle = getVehicle(vehicleRef.current);
+    setCountdown(3);
     overRef.current = false;
     const clock = createSimulationClock();
     const input = createInputState(controlsRef.current);
@@ -83,7 +96,7 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
     setAssetState("loading");
     vehicleImages.load(getVehicle(vehicleRef.current).url).then(() => {
       if (!alive) return;
-      ready = true; readyRef.current = true; input.clear(); clock.reset(); last = performance.now();
+      ready = true; readyRef.current = false; input.clear(); clock.reset(); last = performance.now();
       setAssetState("ready");
     }).catch(() => { if (alive) setAssetState("error"); });
 
@@ -159,9 +172,26 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
         if (visibleRef.current) drawWorld(ctx,run,pausedRef.current,vehicleRef.current);
         return;
       }
+      // Freeze score, fuel and vehicle motion until all three seconds have elapsed.
+      if (launch.value > 0) {
+        // Clear any held pedal so the start cannot inherit accidental input.
+        input.clear(); clock.reset();
+        // Advance only while visible, loaded and unpaused, as checked above.
+        const number = launch.advance(dt);
+        // React updates only when the displayed whole number changes.
+        setCountdown(previous => previous === number ? previous : number);
+        // Enable input exactly when the last countdown second finishes.
+        readyRef.current = number === 0;
+        // Keep the opening world visible under the overlay.
+        drawWorld(ctx, run, false, vehicleRef.current);
+        // The first physics tick happens on the next animation frame.
+        return;
+      }
       let result = "idle";
       clock.advance(dt, (step) => {
         const event = stepRun(run,step,controlsRef.current);
+        // Exhaust changes with throttle and body angle without changing handling.
+        stepExhaust(run.exhaust, step, run, vehicle, controlsRef.current);
         if (event === "crash") { result=event; return false; }
         if (event === "fuel" || result === "idle") result=event;
       });
@@ -184,8 +214,8 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
         // The tank at the moment the run ended.
         onFuelRef.current(run.fuel);
         // The area where the run ended.
-        onAreaRef.current(areaAt(run.x).name);
-        onChallengeRef.current?.(terrainCue(run.x));
+        onAreaRef.current(areaLabel(run.x));
+        onChallengeRef.current?.(hazardCue(run) || terrainCue(run.x));
         // Opens the game-over panel and tells it why the run ended.
         onOverRef.current(points, run.endReason);
       } else if (now - lastScoreAt > 100) {
@@ -196,8 +226,8 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
         // The tank, on the same slow tick as the score.
         onFuelRef.current(run.fuel);
         // The part of Lagos under the korope.
-        onAreaRef.current(areaAt(run.x).name);
-        onChallengeRef.current?.(terrainCue(run.x));
+        onAreaRef.current(areaLabel(run.x));
+        onChallengeRef.current?.(hazardCue(run) || terrainCue(run.x));
       // Closes the block above.
       }
       // Draws the road after the move. The ride matches the picker.
@@ -209,12 +239,16 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
     frame = requestAnimationFrame(loop);
 
     function onKeyDown(event) {
+      // Settings owns keyboard input while open; P must not resume driving behind it.
+      if (document.querySelector("dialog[open]")) return;
       if (!ready || !visibleRef.current || document.hidden || run.over) return;
       if (event.target?.closest?.('input, textarea, select, [contenteditable="true"]')) return;
       if (event.code === "KeyP") {
         if (!event.repeat) { input.clear(); clock.reset(); last=performance.now(); onPauseRef.current(); }
         return;
       }
+      // Countdown accepts pause, but no driving keys.
+      if (launch.value > 0) { if (GAS_KEYS.includes(event.code) || BRAKE_KEYS.includes(event.code)) event.preventDefault(); return; }
       if (pausedRef.current || (event.code === "Space" && event.target?.closest?.('button'))) return;
       const name = GAS_KEYS.includes(event.code) ? "gas" : BRAKE_KEYS.includes(event.code) ? "brake" : null;
       if (name) {
@@ -295,11 +329,15 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
       {/* The hills. */}
       <canvas ref={canvasRef} aria-label="Korope hills" />
       {assetState !== "ready" && <div className="vehicle-loading" role="status">{assetState === "error" ? <><p>Could not load your ride. Check your connection.</p><button className="button" onClick={() => setRetry(n => n + 1)}>Retry</button></> : "Loading your ride…"}</div>}
+      {/* Large start lights announce each second while physics and fuel stay frozen. */}
+      {assetState === "ready" && countdown > 0 && !pausedRef.current && <div className="start-countdown" role="status" aria-live="assertive" aria-atomic="true"><span>GET READY</span><strong key={countdown}>{countdown}</strong><small>Hold Gas when the countdown ends</small></div>}
       {/* Left thumb: back along the road, and brake in the air. */}
       <div className="pedals pedals-left">
 
         {/* Brake. On the road it rolls back. In the air it tips the nose down. */}
         <button
+          // Lock pedals until the opening countdown completes.
+          disabled={assetState !== "ready" || countdown > 0}
           className="pedal brake"
           type="button"
           onPointerDown={(event) => pedalDown(event, "brake")}
@@ -317,6 +355,8 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
 
         {/* Gas. On the road it climbs. In the air it tips the nose up. */}
         <button
+          // Lock pedals until the opening countdown completes.
+          disabled={assetState !== "ready" || countdown > 0}
           className="pedal gas"
           type="button"
           onPointerDown={(event) => pedalDown(event, "gas")}

@@ -1277,3 +1277,62 @@ th {
 .share-actions .button { font-size: 14px; padding-inline: 14px; text-decoration: none; }
 .share-status { min-height: 21px; margin: 10px 0 0; }
 .share-actions a.button { display: inline-flex; align-items: center; justify-content: center; }
+/* Keep the settings card readable and scrollable on small phone screens. */
+.settings-dialog { width: min(400px, calc(100vw - 24px)); box-sizing: border-box; max-height: calc(100dvh - 24px); overflow: auto; border: 0; border-radius: 18px; padding: 24px; background: #fff8eb; color: #211c16; }
+/* Dim the game behind settings so the active controls are obvious. */
+.settings-dialog::backdrop { background: #080e19bb; }
+/* Separate the sound group from the Done button. */
+.settings-dialog fieldset { border: 1px solid #b8ac94; border-radius: 10px; padding: 16px; margin: 0 0 20px; }
+/* Give the section title a clear visual hierarchy. */
+.settings-dialog legend { font-weight: 700; padding-inline: 6px; }
+/* Make the sound checkbox comfortable to tap. */
+.sound-toggle { display: flex; align-items: center; gap: 10px; min-height: 44px; }
+/* Enlarge the checkbox without affecting other form inputs. */
+.sound-toggle input { width: 22px; height: 22px; }
+/* Put the effects slider below its percentage label. */
+.volume-label { display: grid; gap: 8px; margin: 16px 0; }
+/* Let touch users adjust the slider across the card width. */
+.volume-label input { width: 100%; min-height: 32px; touch-action: pan-y; }
+/* Explain music availability without competing with the working controls. */
+.music-status { font-size: 14px; line-height: 1.4; color: #655b4e; }
+/* Keep the route preview readable on desktops and narrow phones. */
+.route-dialog { width: min(900px, calc(100vw - 24px)); }
+/* Scale the original canvas without introducing sideways page scrolling. */
+.route-dialog canvas { display: block; width: 100%; height: auto; border-radius: 10px; margin-top: 16px; }
+/* Make the area selector comfortable to tap. */
+.route-dialog select { display: block; width: 100%; min-height: 44px; margin-top: 8px; font: inherit; }
+/* Long area names may wrap instead of pushing the dashboard off a phone. */
+.hud-meta { min-width: 0; flex-wrap: wrap; }
+/* A bright portrait banner replaces the easily missed one-line hint. */
+@media (orientation: portrait) and (max-width: 900px) {
+  /* Keep the instruction above the road and readable on both light and dark screens. */
+  .rotate-tip { display: flex; align-items: center; gap: 16px; padding: 16px; margin: 12px 0; border: 2px solid #ffc743; border-radius: 16px; background: #ffefbb; color: #302310; text-align: left; box-shadow: 0 5px 20px #0002; }
+  /* Put the requested action ahead of its explanation. */
+  .rotate-tip strong { display: block; font-size: 18px; line-height: 1.2; }
+  /* Keep the supporting line compact. */
+  .rotate-tip div > span { display: block; font-size: 14px; line-height: 1.35; margin-top: 5px; }
+  /* Include practical advice for phones with orientation lock enabled. */
+  .rotate-tip small { display: block; font-size: 12px; line-height: 1.3; margin-top: 7px; color: #665023; }
+  /* Reserve space for the phone gesture so the text never moves. */
+  .rotate-phone { position: relative; flex: 0 0 48px; height: 58px; font-size: 42px; line-height: 58px; color: #906000; }
+  /* Draw the phone with CSS instead of downloading another image. */
+  .rotate-phone > span { position: absolute; left: 16px; top: 18px; width: 14px; height: 25px; border: 2px solid #302310; border-radius: 4px; background: #fff9e8; animation: turn-phone 3.2s ease-in-out infinite; }
+}
+/* Show the suggested quarter-turn, then gently return to the start. */
+@keyframes turn-phone { 0%, 15%, 100% { transform: rotate(0); } 45%, 75% { transform: rotate(90deg); } }
+/* Cover the road during the start sequence without blocking the dashboard's pause button. */
+.start-countdown { position: absolute; inset: 0; z-index: 3; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 5px; background: #111e2dc9; color: #fff8e9; text-align: center; pointer-events: none; }
+/* A compact label establishes why the vehicle is waiting. */
+.start-countdown > span { font-size: clamp(12px, 2vw, 20px); font-weight: 800; letter-spacing: .2em; }
+/* Big yellow numerals are visible even on a narrow portrait road. */
+.start-countdown strong { font: 900 clamp(58px, 12vw, 116px)/1 system-ui, sans-serif; color: #ffd15a; text-shadow: 0 4px 0 #0005; animation: countdown-pop .25s ease-out; }
+/* Explain exactly when the pedals become available. */
+.start-countdown small { font-size: clamp(11px, 1.7vw, 16px); }
+/* Locked pedals look inactive while assets and countdown are pending. */
+.pedal:disabled { opacity: .45; }
+/* Keep the portrait countdown over the picture, leaving both locked pedals visible. */
+@media (max-width: 560px) and (orientation: portrait) { .start-countdown { bottom: 104px; } }
+/* Give each new numeral a single short entrance. */
+@keyframes countdown-pop { from { transform: scale(1.18); opacity: .5; } to { transform: scale(1); opacity: 1; } }
+/* Respect players who prefer still interface elements. */
+@media (prefers-reduced-motion: reduce) { .rotate-phone > span, .start-countdown strong { animation: none; } }

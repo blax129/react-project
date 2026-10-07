@@ -3,6 +3,29 @@ let audioCtx = null;
 // True when the player has turned sound off.
 let muted = false;
 
+// Keep effects volume separate from the on/off switch.
+let effectsVolume = .7;
+// Restore a valid saved volume without breaking audio when storage is unavailable.
+try {
+  // Read the last chosen percentage as a zero-to-one value.
+  const saved = localStorage.getItem('korope-effects-volume');
+  // Ignore missing or invalid preferences.
+  if (saved !== null && Number.isFinite(Number(saved))) effectsVolume = Math.max(0, Math.min(1, Number(saved)));
+// Storage access may be blocked by the browser.
+} catch { /* Keep the default volume when storage cannot be read. */ }
+// Let each settings dialog read the shared volume.
+export function getEffectsVolume() { return effectsVolume; }
+// Apply and save the chosen volume.
+export function setEffectsVolume(value) {
+  // Clamp volume to the valid audio range.
+  effectsVolume = Math.max(0, Math.min(1, Number.isFinite(value) ? value : .7));
+  // Remember the preference when browser storage is available.
+  try { localStorage.setItem('korope-effects-volume', String(effectsVolume)); }
+  // Audio must still work if saving preferences is blocked.
+  catch { /* Retain the choice in memory for this session. */ }
+// Finish the volume setter.
+}
+
 // Remembers the mute choice.
 export function setMuted(next) {
   // Stores the choice for the sound functions.
@@ -30,7 +53,7 @@ export function unlockSound() {
 // Plays a short beep. High pitch is the jump. Low pitch is the crash.
 function beep(frequency, seconds, type) {
   // A muted game plays nothing.
-  if (muted || !audioCtx) {
+  if (muted || effectsVolume === 0 || !audioCtx) {
     // Leaves without a tone.
     return;
   // Closes the block above.
@@ -44,7 +67,7 @@ function beep(frequency, seconds, type) {
   // The pitch.
   osc.frequency.value = frequency;
   // Starts loud enough to hear, then falls to silence.
-  gain.gain.setValueAtTime(0.08, audioCtx.currentTime);
+  gain.gain.setValueAtTime(0.08 * effectsVolume, audioCtx.currentTime);
   // Fades out so the beep does not click.
   gain.gain.exponentialRampToValueAtTime(0.001, audioCtx.currentTime + seconds);
   // Connects the tone to the volume.

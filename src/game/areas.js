@@ -1,188 +1,100 @@
-// Each stretch of road is a part of Lagos. Later stretches are harder.
-export const AREAS = [
-  // The island start. Bright afternoon, modest blocks.
-  {
-    name: "CMS",
-    from: 0,
-    skyTop: "#7ec8e3",
-    skyBottom: "#f3d5a0",
-    dirt: "#c4a574",
-    road: "#3a342c",
-    edge: "#f0b400",
-    sun: "#f6c445",
-    night: false,
-    palms: false,
-    buildings: [
-      { x: 40, w: 70, h: 140, color: "#243044" },
-      { x: 140, w: 54, h: 96, color: "#31445c" },
-      { x: 250, w: 90, h: 120, color: "#1d3148" },
-      { x: 420, w: 46, h: 160, color: "#2a3d55" },
-      { x: 560, w: 110, h: 84, color: "#3a4d38" },
-      { x: 730, w: 64, h: 130, color: "#243044" },
-    ],
-  },
-  // The bus park. Warmer sky and low market roofs.
-  {
-    name: "Obalende",
-    from: 1400,
-    skyTop: "#f0a05a",
-    skyBottom: "#f6d7a2",
-    dirt: "#c48a4a",
-    road: "#3f2a22",
-    edge: "#f0b400",
-    sun: "#ffb703",
-    night: false,
-    palms: false,
-    buildings: [
-      { x: 30, w: 120, h: 70, color: "#8c3d2f" },
-      { x: 170, w: 90, h: 54, color: "#c47b2b" },
-      { x: 290, w: 70, h: 110, color: "#5c3428" },
-      { x: 400, w: 140, h: 48, color: "#a15c32" },
-      { x: 570, w: 80, h: 90, color: "#6a3a2a" },
-      { x: 700, w: 150, h: 60, color: "#b56b2f" },
-    ],
-  },
-  // The bridge. Open sky, thin towers, pale water color in the ground.
-  {
-    name: "Third Mainland",
-    from: 3200,
-    skyTop: "#8ec6e6",
-    skyBottom: "#d5e7ef",
-    dirt: "#8fafb8",
-    road: "#2e3a40",
-    edge: "#f4f7f8",
-    sun: "#fff4d2",
-    night: false,
-    palms: false,
-    buildings: [
-      { x: 80, w: 18, h: 180, color: "#1e3a4c" },
-      { x: 220, w: 16, h: 150, color: "#245066" },
-      { x: 480, w: 22, h: 200, color: "#163244" },
-      { x: 760, w: 18, h: 160, color: "#1e3a4c" },
-    ],
-  },
-  // Dense and green, the campus and the market side by side.
-  {
-    name: "Yaba",
-    from: 5200,
-    skyTop: "#6eb0c9",
-    skyBottom: "#d7e2b0",
-    dirt: "#8ea35a",
-    road: "#2c3324",
-    edge: "#f0b400",
-    sun: "#f6c445",
-    night: false,
-    palms: true,
-    buildings: [
-      { x: 20, w: 80, h: 100, color: "#2f4a32" },
-      { x: 130, w: 50, h: 170, color: "#243044" },
-      { x: 220, w: 100, h: 80, color: "#3d5c40" },
-      { x: 360, w: 40, h: 190, color: "#1d3148" },
-      { x: 450, w: 120, h: 70, color: "#4a6748" },
-      { x: 620, w: 70, h: 140, color: "#31445c" },
-      { x: 740, w: 90, h: 96, color: "#2a4030" },
-    ],
-  },
-  // Evening gold and one wide low bowl, like the stadium end of town.
-  {
-    name: "Surulere",
-    from: 7400,
-    skyTop: "#e07a4c",
-    skyBottom: "#f3c98a",
-    dirt: "#a86b3c",
-    road: "#3a241c",
-    edge: "#f0b400",
-    sun: "#ffd27a",
-    night: false,
-    palms: false,
-    buildings: [
-      { x: 40, w: 60, h: 90, color: "#5a2e38" },
-      { x: 140, w: 280, h: 70, color: "#7a3040" },
-      { x: 460, w: 70, h: 120, color: "#4a2830" },
-      { x: 580, w: 90, h: 80, color: "#6a3830" },
-      { x: 720, w: 80, h: 140, color: "#3d2430" },
-    ],
-  },
-  // Dusk over taller blocks.
-  {
-    name: "Ikeja",
-    from: 9800,
-    skyTop: "#3d4d7a",
-    skyBottom: "#e0a06a",
-    dirt: "#8d6a48",
-    road: "#241c28",
-    edge: "#f0b400",
-    sun: "#ffb15a",
-    night: false,
-    palms: false,
-    buildings: [
-      { x: 30, w: 70, h: 200, color: "#1a2038" },
-      { x: 130, w: 54, h: 240, color: "#12182c" },
-      { x: 220, w: 90, h: 170, color: "#243056" },
-      { x: 360, w: 46, h: 260, color: "#101628" },
-      { x: 460, w: 80, h: 190, color: "#1c2748" },
-      { x: 600, w: 60, h: 220, color: "#182038" },
-      { x: 720, w: 100, h: 160, color: "#2a3358" },
-    ],
-  },
-  // The coast. Deep blue and palms, with spaced towers.
-  {
-    name: "Lekki",
-    from: 12600,
-    skyTop: "#16324a",
-    skyBottom: "#4e88a8",
-    dirt: "#c2a06a",
-    road: "#1c2830",
-    edge: "#f4f7f8",
-    sun: "#f6e7b4",
-    night: false,
-    palms: true,
-    buildings: [
-      { x: 60, w: 50, h: 210, color: "#102030" },
-      { x: 200, w: 36, h: 250, color: "#0c1824" },
-      { x: 420, w: 64, h: 180, color: "#163044" },
-      { x: 700, w: 44, h: 230, color: "#0e2030" },
-    ],
-  },
-  // The far end. Night, and the steepest hills.
-  {
-    name: "Epe",
-    from: 15800,
-    skyTop: "#101828",
-    skyBottom: "#243044",
-    dirt: "#3d4a32",
-    road: "#141810",
-    edge: "#c9a227",
-    sun: "#e8eef8",
-    night: true,
-    palms: true,
-    buildings: [
-      { x: 80, w: 90, h: 60, color: "#1a2418" },
-      { x: 280, w: 50, h: 90, color: "#121c14" },
-      { x: 520, w: 120, h: 48, color: "#1c2818" },
-      { x: 760, w: 40, h: 80, color: "#101810" },
-    ],
-  },
+// Researched area cues are documented in docs/lagos-world-research.md.
+// Route order is a stylized tour with detours, not turn-by-turn navigation.
+export const AREA_LENGTH = 2200;
+// Every entry has its own architecture, street labels, road texture and obstacle emphasis.
+const ROUTE = [
+  // Festac First Gate: Estate gateway and solar streetlights.
+  {"name":"Festac First Gate","id":"festac-first-gate","theme":"gateway","landmark":"FESTAC TOWN","subtitle":"FIRST AVENUE","description":"Estate gateway and solar streetlights","shops":["ESTATE SHOPS","CLINIC","BUS STOP"],"roadStyle":"humps","hazard":"police","source":"festac","palette":0,"detail":0,"from":0,"terrainAmplitude":5,"terrainWaves":3},
+  // Festac 21 Road: Balconied estate blocks and roadside car displays.
+  {"name":"Festac 21 Road","id":"festac-21-road","theme":"estate","landmark":"21 ROAD","subtitle":"FESTAC ESTATE","description":"Balconied estate blocks and roadside car displays","shops":["AUTO SALES","BARBER","PROVISIONS"],"roadStyle":"rollers","hazard":"mud","source":"festac","palette":1,"detail":1,"from":2200,"terrainAmplitude":5.16,"terrainWaves":4},
+  // Festac 22 Road: Computer training plaza and neighbourhood shops.
+  {"name":"Festac 22 Road","id":"festac-22-road","theme":"school","landmark":"NIIT FESTAC","subtitle":"22 ROAD · DAMILOLA PLAZA","description":"Computer training plaza and neighbourhood shops","shops":["NIIT","BOOKSHOP","PRINT & COPY"],"roadStyle":"rumble","hazard":"police","source":"niit","palette":2,"detail":2,"from":4400,"terrainAmplitude":5.32,"terrainWaves":5},
+  // Festac 23 Road: Mixed shops below housing blocks.
+  {"name":"Festac 23 Road","id":"festac-23-road","theme":"avenue","landmark":"23 ROAD","subtitle":"FESTAC TOWN","description":"Mixed shops below housing blocks","shops":["PHARMACY","TAILOR","FOOD CANTEEN"],"roadStyle":"dips","hazard":"debris","source":"festac","palette":3,"detail":3,"from":6600,"terrainAmplitude":5.48,"terrainWaves":6},
+  // Festac Second Gate: Estate entrance meeting a busy market corridor.
+  {"name":"Festac Second Gate","id":"festac-second-gate","theme":"gateMarket","landmark":"SECOND GATE","subtitle":"AGBOJU · FESTAC","description":"Estate entrance meeting a busy market corridor","shops":["GROCERIES","FRESH BREAD","POS"],"roadStyle":"humps","hazard":"police","source":"festac","palette":4,"detail":4,"from":8800,"terrainAmplitude":5.64,"terrainWaves":7},
+  // Apple Junction: Commercial junction, eateries and tricycle traffic.
+  {"name":"Apple Junction","id":"apple-junction","theme":"junction","landmark":"APPLE JUNCTION","subtitle":"AMUWO ODOFIN","description":"Commercial junction, eateries and tricycle traffic","shops":["EATERY","SUPERMARKET","EVENT HALL"],"roadStyle":"crests","hazard":"debris","source":"apple","palette":5,"detail":5,"from":11000,"terrainAmplitude":5.8,"terrainWaves":3},
+  // Amuwo Odofin: Estate walls, landscaped compounds and shopping plazas.
+  {"name":"Amuwo Odofin","id":"amuwo-odofin","theme":"garden","landmark":"AMUWO ODOFIN","subtitle":"RESIDENTIAL DISTRICT","description":"Estate walls, landscaped compounds and shopping plazas","shops":["SHOPPING PLAZA","HOTEL","RESTAURANT"],"roadStyle":"rollers","hazard":"police","source":"amuwo","palette":0,"detail":6,"from":13200,"terrainAmplitude":5.96,"terrainWaves":4},
+  // Agboju: Produce stalls, umbrellas and yellow minibuses.
+  {"name":"Agboju","id":"agboju","theme":"market","landmark":"AGBOJU MARKET","subtitle":"BADAGRY CORRIDOR","description":"Produce stalls, umbrellas and yellow minibuses","shops":["TOMATOES","YAM & RICE","FABRICS"],"roadStyle":"potholes","hazard":"mud","source":"festac","palette":1,"detail":7,"from":15400,"terrainAmplitude":6.12,"terrainWaves":5},
+  // Alakija: Expressway junction with a gateway and transit activity.
+  {"name":"Alakija","id":"alakija","theme":"interchange","landmark":"ALAKIJA","subtitle":"FESTAC THIRD GATE","description":"Expressway junction with a gateway and transit activity","shops":["BUS PARK","SPARE PARTS","POS"],"roadStyle":"crests","hazard":"debris","source":"festac","palette":2,"detail":8,"from":17600,"terrainAmplitude":6.28,"terrainWaves":6},
+  // Satellite Town: Housing beside industrial storage and service roads.
+  {"name":"Satellite Town","id":"satellite-town","theme":"industrial","landmark":"SATELLITE TOWN","subtitle":"RESIDENTIAL / INDUSTRIAL EDGE","description":"Housing beside industrial storage and service roads","shops":["ESTATE STORES","WORKSHOP","CANTEEN"],"roadStyle":"dips","hazard":"mud","source":"satellite","palette":3,"detail":9,"from":19800,"terrainAmplitude":6.4399999999999995,"terrainWaves":7},
+  // Abule Ado: Low-rise homes, local shops and community facilities.
+  {"name":"Abule Ado","id":"abule-ado","theme":"neighborhood","landmark":"ABULE ADO","subtitle":"BADAGRY CORRIDOR","description":"Low-rise homes, local shops and community facilities","shops":["COMMUNITY SCHOOL","BUILDING SUPPLIES","FOOD MART"],"roadStyle":"potholes","hazard":"mud","source":"amuwo","palette":4,"detail":10,"from":22000,"terrainAmplitude":6.6,"terrainWaves":3},
+  // Trade Fair Complex: Broad pavilion roofs, wholesale shops and loading yards.
+  {"name":"Trade Fair Complex","id":"trade-fair-complex","theme":"wholesale","landmark":"LAGOS TRADE FAIR","subtitle":"INTERNATIONAL TRADE FAIR COMPLEX","description":"Broad pavilion roofs, wholesale shops and loading yards","shops":["WHOLESALE","WAREHOUSE","LOADING BAY"],"roadStyle":"rumble","hazard":"debris","source":"trade","palette":5,"detail":11,"from":24200,"terrainAmplitude":6.76,"terrainWaves":4},
+  // Volks: Industrial sheds, automotive workshops and bus stops.
+  {"name":"Volks","id":"volks","theme":"factory","landmark":"VOLKS","subtitle":"OJO · BADAGRY EXPRESSWAY","description":"Industrial sheds, automotive workshops and bus stops","shops":["AUTO PARTS","MECHANIC","BUS STOP"],"roadStyle":"rollers","hazard":"debris","source":"volks","palette":0,"detail":12,"from":26400,"terrainAmplitude":6.92,"terrainWaves":5},
+  // Iyana Iba: Flyover piers, busy market frontage and minibuses.
+  {"name":"Iyana Iba","id":"iyana-iba","theme":"interchangeMarket","landmark":"IYANA IBA","subtitle":"LASU / BADAGRY INTERCHANGE","description":"Flyover piers, busy market frontage and minibuses","shops":["FRESH PRODUCE","BUS PARK","COLD DRINKS"],"roadStyle":"crests","hazard":"police","source":"iyana","palette":1,"detail":13,"from":28600,"terrainAmplitude":7.08,"terrainWaves":6},
+  // LASU Ojo: University entrance, crest, trees and campus buildings.
+  {"name":"LASU Ojo","id":"lasu-ojo","theme":"campus","landmark":"LAGOS STATE UNIVERSITY","subtitle":"OJO CAMPUS","description":"University entrance, crest, trees and campus buildings","shops":["BOOKSHOP","STUDENT CAFE","PRINT CENTRE"],"roadStyle":"humps","hazard":"police","source":"lasu","palette":2,"detail":14,"from":30800,"terrainAmplitude":7.24,"terrainWaves":7},
+  // Iba Town: Civic frontage and local mixed-use neighbourhood.
+  {"name":"Iba Town","id":"iba-town","theme":"townhall","landmark":"IBA TOWN","subtitle":"LASU–IBA ROAD","description":"Civic frontage and local mixed-use neighbourhood","shops":["COMMUNITY HALL","PRIMARY SCHOOL","MARKET"],"roadStyle":"dips","hazard":"mud","source":"iba","palette":3,"detail":15,"from":33000,"terrainAmplitude":7.4,"terrainWaves":3},
+  // Igando: Bus interchange activity, shop rows and market awnings.
+  {"name":"Igando","id":"igando","theme":"terminalMarket","landmark":"IGANDO","subtitle":"LASU–ISHERI CORRIDOR","description":"Bus interchange activity, shop rows and market awnings","shops":["BUS TERMINAL","PROVISIONS","WORKSHOP"],"roadStyle":"rumble","hazard":"debris","source":"igando","palette":4,"detail":16,"from":35200,"terrainAmplitude":7.5600000000000005,"terrainWaves":4},
+  // Ikotun: Dense market frontage with a church silhouette.
+  {"name":"Ikotun","id":"ikotun","theme":"churchMarket","landmark":"IKOTUN","subtitle":"MARKET / IKOTUN-EGBE","description":"Dense market frontage with a church silhouette","shops":["IREPODUN MARKET","GUEST HOUSE","TEXTILES"],"roadStyle":"potholes","hazard":"police","source":"ikotun","palette":5,"detail":17,"from":37400,"terrainAmplitude":7.720000000000001,"terrainWaves":5},
+  // Egbeda: Low-rise commercial blocks, pharmacies and transport stops.
+  {"name":"Egbeda","id":"egbeda","theme":"commercial","landmark":"EGBEDA","subtitle":"AKOWONJO / IDIMU","description":"Low-rise commercial blocks, pharmacies and transport stops","shops":["SHOPPING PLAZA","PHARMACY","FOOD COURT"],"roadStyle":"rollers","hazard":"mud","source":"alimosho","palette":0,"detail":18,"from":39600,"terrainAmplitude":7.88,"terrainWaves":6},
+  // Akowonjo: Residential side streets, schools and shopfronts.
+  {"name":"Akowonjo","id":"akowonjo","theme":"neighborhood","landmark":"AKOWONJO","subtitle":"ALIMOSHO","description":"Residential side streets, schools and shopfronts","shops":["SCHOOL","BAKERY","TAILOR"],"roadStyle":"humps","hazard":"debris","source":"alimosho","palette":1,"detail":19,"from":41800,"terrainAmplitude":8.04,"terrainWaves":7},
+  // Dopemu: Raised road infrastructure and workshop frontage.
+  {"name":"Dopemu","id":"dopemu","theme":"flyover","landmark":"DOPEMU","subtitle":"LAGOS–ABEOKUTA CORRIDOR","description":"Raised road infrastructure and workshop frontage","shops":["TYRES","SPARE PARTS","WORKSHOP"],"roadStyle":"crests","hazard":"debris","source":"transport","palette":2,"detail":20,"from":44000,"terrainAmplitude":8.2,"terrainWaves":3},
+  // Iyana Ipaja: Busy interchange with layered roads and bus queues.
+  {"name":"Iyana Ipaja","id":"iyana-ipaja","theme":"interchangeBus","landmark":"IYANA IPAJA","subtitle":"BUS INTERCHANGE","description":"Busy interchange with layered roads and bus queues","shops":["BUS PARK","MARKET","TRAVEL OFFICE"],"roadStyle":"rumble","hazard":"police","source":"transport","palette":3,"detail":21,"from":46200,"terrainAmplitude":8.36,"terrainWaves":4},
+  // Agege: Pen Cinema flyover, railway and market edges.
+  {"name":"Agege","id":"agege","theme":"railMarket","landmark":"AGEGE · PEN CINEMA","subtitle":"RAIL / FLYOVER","description":"Pen Cinema flyover, railway and market edges","shops":["AGEGE BREAD","MARKET","STATION"],"roadStyle":"dips","hazard":"mud","source":"agege","palette":4,"detail":22,"from":48400,"terrainAmplitude":8.52,"terrainWaves":5},
+  // Ikeja Along: Rail platforms, pedestrian bridge and bus bays.
+  {"name":"Ikeja Along","id":"ikeja-along","theme":"railTerminal","landmark":"IKEJA ALONG","subtitle":"RAIL & BUS TERMINAL","description":"Rail platforms, pedestrian bridge and bus bays","shops":["IKEJA STATION","BUS TERMINAL","NEWSSTAND"],"roadStyle":"humps","hazard":"police","source":"lamata","palette":5,"detail":23,"from":50600,"terrainAmplitude":8.68,"terrainWaves":6},
+  // Computer Village: Electronics plazas, device displays, umbrellas and cables.
+  {"name":"Computer Village","id":"computer-village","theme":"tech","landmark":"COMPUTER VILLAGE","subtitle":"OTIGBA · IKEJA","description":"Electronics plazas, device displays, umbrellas and cables","shops":["PHONES","LAPTOPS","REPAIRS"],"roadStyle":"potholes","hazard":"debris","source":"computer","palette":0,"detail":24,"from":52800,"terrainAmplitude":8.84,"terrainWaves":7},
+  // Allen Avenue: Banking plazas, hotels, restaurants and evening signage.
+  {"name":"Allen Avenue","id":"allen-avenue","theme":"hotel","landmark":"ALLEN AVENUE","subtitle":"IKEJA HIGH STREET","description":"Banking plazas, hotels, restaurants and evening signage","shops":["HOTEL","LOUNGE","BANK"],"roadStyle":"rollers","hazard":"police","source":"allen","palette":1,"detail":25,"from":55000,"terrainAmplitude":9,"terrainWaves":3},
+  // Opebi: Office and residential frontage with a link-bridge motif.
+  {"name":"Opebi","id":"opebi","theme":"officeBridge","landmark":"OPEBI","subtitle":"IKEJA","description":"Office and residential frontage with a link-bridge motif","shops":["OFFICES","SCHOOL","RESTAURANT"],"roadStyle":"crests","hazard":"mud","source":"opebi","palette":2,"detail":26,"from":57200,"terrainAmplitude":9.16,"terrainWaves":4},
+  // Alausa: Civic blocks, flags and landscaped public greenery.
+  {"name":"Alausa","id":"alausa","theme":"civicPark","landmark":"ALAUSA","subtitle":"STATE SECRETARIAT / JJT PARK","description":"Civic blocks, flags and landscaped public greenery","shops":["SECRETARIAT","JJT PARK","VISITORS"],"roadStyle":"rumble","hazard":"police","source":"alausa","palette":3,"detail":27,"from":59400,"terrainAmplitude":9.32,"terrainWaves":5},
+  // Ikeja GRA: Tree-lined compounds, hotels and low-density homes.
+  {"name":"Ikeja GRA","id":"ikeja-gra","theme":"gardenHotel","landmark":"IKEJA GRA","subtitle":"GARDEN DISTRICT","description":"Tree-lined compounds, hotels and low-density homes","shops":["GARDEN HOTEL","RESTAURANT","RESIDENCES"],"roadStyle":"dips","hazard":"debris","source":"gra","palette":4,"detail":28,"from":61600,"terrainAmplitude":9.48,"terrainWaves":6},
+  // Airport Road: Terminal frontage, control tower and passing aircraft.
+  {"name":"Airport Road","id":"airport-road","theme":"airport","landmark":"MURTALA MUHAMMED","subtitle":"IKEJA · AIRPORT CORRIDOR","description":"Terminal frontage, control tower and passing aircraft","shops":["DEPARTURES","ARRIVALS","AIRPORT HOTEL"],"roadStyle":"crests","hazard":"police","source":"airport","palette":5,"detail":29,"from":63800,"terrainAmplitude":9.64,"terrainWaves":7},
+// Finish the thirty-location route.
 ];
-
-// The area the korope is in. The last area whose start it has passed.
+// Muted Lagos daylight palettes preserve contrast with fuel and hazard markers.
+const PALETTES = [["#8cbecd","#f5dbb0","#ad8456","#d3bd8d","#825f43"],["#83b9c5","#ede2c0","#b38e64","#b6bba3","#647967"],["#92bbc9","#eedbc2","#9c8666","#becbd3","#5c7c92"],["#baaa9e","#eed2ae","#ad784e","#d5b68b","#805e49"],["#708da0","#e7bb95","#8f7454","#bfa89b","#705f61"],["#566986","#dbac8e","#82644f","#9e9aaa","#5e5772"]];
+// Expand compact scene settings into the colours used by the game renderer.
+export const AREAS = ROUTE.map((area, index) => {
+  // Choose this scene's sky, ground, wall and trim colours.
+  const [skyTop, skyBottom, dirt, wall, accent] = PALETTES[area.palette];
+  // Build a stable silhouette behind the detailed architecture.
+  const buildings = Array.from({length:7}, (_, n) => ({x:n*145+15,w:70+(index+n)%4*12,h:55+(index*13+n*29)%95,color:accent}));
+  // Keep all researched metadata available to the route browser and renderer.
+  return {...area,index,skyTop,skyBottom,dirt,wall,accent,road:'#303436',edge:'#e3c878',sun:'#ffe1a0',night:false,palms:['garden','gardenHotel','campus','civicPark'].includes(area.theme),buildings};
+// Finish expanding the area list.
+});
+// Look up the stage by position while keeping reverse travel and endless play valid.
 export function areaAt(x) {
-  // CMS until the road reaches the next name.
-  let found = AREAS[0];
-  // Walks the list. Later areas overwrite earlier ones once x has passed them.
-  AREAS.forEach((area) => {
-    // This stretch has started.
-    if (x >= area.from) {
-      // Use it.
-      found = area;
-    }
-  });
-  // The current name and colors.
-  return found;
+  // Clamp the position so driving beyond the tour stays in the airport stage.
+  return AREAS[Math.max(0,Math.min(AREAS.length-1,Math.floor(x/AREA_LENGTH)))];
+// Finish the area lookup.
+}
+// Preserve the established early difficulty ramp independently of tour length.
+export function hardship(x) {
+  // Terrain's separate late-game curve continues increasing beyond this base ramp.
+  return Math.max(0,Math.min(1,x/15800));
+// Finish the base difficulty helper.
 }
 
-// 0 at CMS and 1 at Epe. Smooth, so the hills do not jump at a boundary.
-export function hardship(x) {
-  // 15800 is where Epe starts. Past that, the road stays at its hardest.
-  return Math.max(0, Math.min(1, x / 15800));
+// Show both the current place and progress through the thirty-area journey.
+export function areaLabel(x) {
+  // Resolve the actual area from the vehicle's world position.
+  const area=areaAt(x);
+  // Keep progress visible without changing the distance-based score.
+  return area.name+' · '+(area.index+1)+'/30';
+// Finish the HUD label helper.
 }
