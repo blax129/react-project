@@ -1,5 +1,6 @@
+import { terrainCue } from "./game/terrain";
 // React state and the pedal flags that the canvas reads every frame.
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 // The opening card.
 import StartScreen from "./components/StartScreen";
 // The score bar.
@@ -38,6 +39,7 @@ export default function App() {
   const [fuel, setFuel] = useState(100);
   // The part of Lagos on screen. The road starts at CMS.
   const [area, setArea] = useState("CMS");
+  const [challenge, setChallenge] = useState(() => terrainCue(40));
   // "flip" or "fuel", shown on the end card.
   const [endReason, setEndReason] = useState("");
   // running, paused, or over.
@@ -48,6 +50,8 @@ export default function App() {
   const controlsRef = useRef({ gas: false, brake: false, left: false, right: false });
   // The pause flag. A ref lets the loop see it without restarting.
   const pausedRef = useRef(false);
+
+  useLayoutEffect(() => { window.scrollTo(0, 0); }, [screen, runId]);
 
   // Tells the sound file whenever the button changes, and remembers the choice.
   useEffect(() => {
@@ -86,6 +90,7 @@ export default function App() {
     setFuel(100);
     // The ride opens in CMS.
     setArea("CMS");
+    setChallenge(terrainCue(40));
     // Clears a leftover crash reason from a previous end card.
     setEndReason("");
     // Lets go of every pedal so the first frame is still.
@@ -183,6 +188,7 @@ export default function App() {
     setFuel(100);
     // The new ride opens in CMS.
     setArea("CMS");
+    setChallenge(terrainCue(40));
     // The end card closes.
     setPhase("running");
     // A new id remounts the canvas, which creates a new run.
@@ -209,7 +215,7 @@ export default function App() {
   // The page.
   return (
     // Centers the game on wide screens.
-    <main className="page">
+    <main className={screen === "play" ? "page page-playing" : "page"}>
       {/* The start card. */}
       {screen === "start" ? (
         // The instructions and the Start button.
@@ -237,7 +243,9 @@ export default function App() {
             onToggleMute={onToggleMute}
           />
           {/* A short control reminder. Hidden on short phones so the road keeps the space. */}
-          <p className="hint">Left and Right drive. Gas and Brake tip the nose in the air. P pauses.</p>
+          <p className="terrain-cue">{challenge}</p>
+          <p className="rotate-tip">Turn your phone sideways for a bigger road.</p>
+          <p className="hint">Left brakes, then reverses. Right drives. Gas and Brake tilt in the air. P pauses.</p>
           {/* The moving road. runId starts a fresh run. */}
           <GameCanvas
             // A new number throws away the old run and builds another.
@@ -256,6 +264,7 @@ export default function App() {
             onFuel={setFuel}
             // Updates the place name.
             onArea={setArea}
+            onChallenge={setChallenge}
             // Opens the end card.
             onOver={onOver}
             // P from the keyboard.

@@ -1,9 +1,11 @@
 // React state for the ride in the middle of the slideshow.
-import { useState } from "react";
+import { useEffect, useState } from "react";
 // The sound switch.
 import MuteButton from "./MuteButton";
 // The rides, ratings, and the browser key for the last pick.
 import { VEHICLE_KEY, VEHICLES, getVehicle, vehicleRatings } from "../game/vehicles";
+
+import { vehicleImages } from "../game/vehicleImages";
 
 // Every ride in picker order.
 const RIDE_LIST = Object.values(VEHICLES);
@@ -41,7 +43,7 @@ function SideRide({ ride, side, onSelect }) {
     // Tapping a side card brings that ride to the middle.
     <button className={`ride-side ride-side-${side}`} type="button" onClick={onSelect} aria-label={`Show ${ride.name}`}>
       {/* A smaller cutout so the middle ride stays the focus. */}
-      <img className="ride-side-art" src={ride.url} alt="" />
+      <img className="ride-side-art" loading="lazy" decoding="async" src={ride.url} alt="" />
       {/* Just the name under the peek picture. */}
       <span className="ride-side-name">{ride.name}</span>
     {/* Closes the side card. */}
@@ -73,6 +75,7 @@ export default function StartScreen({ muted, onToggleMute, onStart, onBoard }) {
   const next = RIDE_LIST[(index + 1) % count];
   // Bars for the middle ride only.
   const ratings = vehicleRatings(current);
+  useEffect(() => { vehicleImages.load(current.url).catch(() => {}); }, [current.url]);
 
   // Moves one step toward the previous ride.
   function goPrev() {
@@ -100,12 +103,12 @@ export default function StartScreen({ muted, onToggleMute, onStart, onBoard }) {
   // The card.
   return (
     // The cream panel.
-    <section className="panel">
+    <section className="panel start-panel">
       {/* The game name. */}
       <h1>Korope</h1>
       {/* What the player is about to do. */}
       <p className="lead">
-        Pick a ride, then drive out of CMS. The hills get steeper through Obalende, Third Mainland, Yaba, Surulere, Ikeja, Lekki, and Epe. Left rolls back along the road. Right climbs forward. Gas and Brake tip the nose in the air. Collect the yellow fuel cans, and coast downhill to save fuel.
+        Take on Lagos hills. Pick your ride, time your climbs, and see how far you can go.
       {/* Closes this sentence. */}
       </p>
       {/* The ride picker heading. */}
@@ -138,7 +141,7 @@ export default function StartScreen({ muted, onToggleMute, onStart, onBoard }) {
               {/* How forgiving landings feel. */}
               <StatBar label="Stability" value={ratings.stability} />
               {/* Higher means less fuel burned. */}
-              <StatBar label="Fuel" value={ratings.fuelEconomy} />
+              <StatBar label="Fuel economy" value={ratings.fuelEconomy} />
             {/* Closes the ratings. */}
             </div>
           {/* Closes the middle card. */}
@@ -160,13 +163,13 @@ export default function StartScreen({ muted, onToggleMute, onStart, onBoard }) {
       {/* Closes the count. */}
       </p>
       {/* The controls heading. */}
-      <h2>Controls</h2>
+      <details className="driving-help"><summary>How to play</summary>
       {/* The list of ways to drive and pause. */}
       <ul className="controls">
         {/* Keyboard forward. */}
         <li>Hold Right, the right arrow, D, or Space to drive forward. The Gas pedal does the same.</li>
         {/* Keyboard back. */}
-        <li>Hold Left, the left arrow, or A to drive back along the road. The Brake pedal does the same.</li>
+        <li>Hold Left, the left arrow, or A to brake, then reverse. The Brake pedal does the same. Reversing uses fuel; braking and coasting do not.</li>
         {/* The jump off a crest. */}
         <li>Let go of the gas before a steep lip. A tilt in the air is safe. You lose only if you land upside down.</li>
         {/* Pause. */}
@@ -178,6 +181,7 @@ export default function StartScreen({ muted, onToggleMute, onStart, onBoard }) {
         The score is how far you get. Landing upside down, or an empty tank, ends the run.
       {/* Closes this sentence. */}
       </p>
+      </details>
       {/* The three actions. */}
       <div className="actions">
         {/* Starts a run with the middle ride. */}

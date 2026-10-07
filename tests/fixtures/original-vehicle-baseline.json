@@ -1,0 +1,192 @@
+[
+  {
+    "id": "korope",
+    "burn": 11.52,
+    "tankSeconds": 8.680555555555555,
+    "x": 1858.2485007041982,
+    "seconds": 6.341666666666772,
+    "reason": "flip",
+    "fuel": 78.94399999999865,
+    "pickups": 2
+  },
+  {
+    "id": "okada",
+    "burn": 8.8,
+    "tankSeconds": 11.363636363636363,
+    "x": 1801.3021296723537,
+    "seconds": 5.6500000000000705,
+    "reason": "flip",
+    "fuel": 70.00666666666488,
+    "pickups": 1
+  },
+  {
+    "id": "danfo",
+    "burn": 16,
+    "tankSeconds": 6.25,
+    "x": 1830.6397834452628,
+    "seconds": 5.741666666666742,
+    "reason": "flip",
+    "fuel": 36.133333333330256,
+    "pickups": 1
+  },
+  {
+    "id": "molue",
+    "burn": 24.8,
+    "tankSeconds": 4.032258064516129,
+    "x": 1315.5558361075712,
+    "seconds": 8.441666666666828,
+    "reason": "fuel",
+    "fuel": 0,
+    "pickups": 1
+  },
+  {
+    "id": "taxi",
+    "burn": 16.8,
+    "tankSeconds": 5.9523809523809526,
+    "x": 1255.4794475023666,
+    "seconds": 3.849999999999989,
+    "reason": "flip",
+    "fuel": 63.31999999999974,
+    "pickups": 1
+  },
+  {
+    "id": "delivery",
+    "burn": 18.4,
+    "tankSeconds": 5.434782608695652,
+    "x": 1834.8349993814802,
+    "seconds": 6.041666666666757,
+    "reason": "flip",
+    "fuel": 16.833333333331762,
+    "pickups": 1
+  },
+  {
+    "id": "tipper",
+    "burn": 24,
+    "tankSeconds": 4.166666666666667,
+    "x": 1440.6821323968588,
+    "seconds": 8.550000000000155,
+    "reason": "fuel",
+    "fuel": 0,
+    "pickups": 1
+  },
+  {
+    "id": "suv",
+    "burn": 22.4,
+    "tankSeconds": 4.464285714285714,
+    "x": 1888.397961482423,
+    "seconds": 4.983333333333371,
+    "reason": "flip",
+    "fuel": 16.37333333333288,
+    "pickups": 1
+  },
+  {
+    "id": "dangote",
+    "burn": 29.6,
+    "tankSeconds": 3.378378378378378,
+    "x": 914.0753653566827,
+    "seconds": 8.583333333333487,
+    "reason": "fuel",
+    "fuel": 0,
+    "pickups": 1
+  },
+  {
+    "id": "police",
+    "burn": 19.2,
+    "tankSeconds": 5.208333333333334,
+    "x": 1958.706168968054,
+    "seconds": 5.483333333333396,
+    "reason": "flip",
+    "fuel": 22.720000000002038,
+    "pickups": 1
+  },
+  {
+    "id": "lexus",
+    "burn": 20,
+    "tankSeconds": 5,
+    "x": 1838.8653564914162,
+    "seconds": 4.841666666666697,
+    "reason": "flip",
+    "fuel": 31.1666666666653,
+    "pickups": 1
+  },
+  {
+    "id": "fayawo",
+    "burn": 21.6,
+    "tankSeconds": 4.62962962962963,
+    "x": 349.5432818501426,
+    "seconds": 1.4833333333333305,
+    "reason": "flip",
+    "fuel": 67.95999999999879,
+    "pickups": 0
+  },
+  {
+    "id": "micra",
+    "burn": 7.68,
+    "tankSeconds": 13.020833333333334,
+    "x": 100.61057599446782,
+    "seconds": 0.7583333333333331,
+    "reason": "flip",
+    "fuel": 94.17600000000064,
+    "pickups": 0
+  },
+  {
+    "id": "brt",
+    "burn": 25.6,
+    "tankSeconds": 3.90625,
+    "x": 984.1927466538166,
+    "seconds": 14.466666666666486,
+    "reason": "fuel",
+    "fuel": 0,
+    "pickups": 1
+  },
+  {
+    "id": "peugeot",
+    "burn": 17.6,
+    "tankSeconds": 5.681818181818182,
+    "x": 1850.7445179978129,
+    "seconds": 5.7166666666667405,
+    "reason": "flip",
+    "fuel": 55.38666666666863,
+    "pickups": 2
+  },
+  {
+    "id": "purewater",
+    "burn": 20,
+    "tankSeconds": 5,
+    "x": 1901.990370796583,
+    "seconds": 6.566666666666783,
+    "reason": "flip",
+    "fuel": 0,
+    "pickups": 1
+  },
+  {
+    "id": "tractor",
+    "burn": 23.2,
+    "tankSeconds": 4.310344827586207,
+    "x": 1158.5116497615154,
+    "seconds": 7.6333333333335025,
+    "reason": "fuel",
+    "fuel": 0,
+    "pickups": 1
+  },
+  {
+    "id": "benzgle",
+    "burn": 23.2,
+    "tankSeconds": 4.310344827586207,
+    "x": 1510.7093943308025,
+    "seconds": 3.8416666666666557,
+    "reason": "flip",
+    "fuel": 38.87333333333483,
+    "pickups": 1
+  },
+  {
+    "id": "benzcoupe",
+    "burn": 24,
+    "tankSeconds": 4.166666666666667,
+    "x": 1469.6968836209578,
+    "seconds": 3.716666666666656,
+    "reason": "flip",
+    "fuel": 38.79999999999873,
+    "pickups": 1
+  }
+]

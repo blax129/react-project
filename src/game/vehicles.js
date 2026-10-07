@@ -1,27 +1,29 @@
+import benchmarks from "./vehicleBenchmarks.json" with { type: "json" };
+import { vehicleGeometry } from "./vehicleGeometry";
 // The rickshaw picture. Kept from the earlier cutout.
-import koropeUrl from "./korope.png";
+import koropeUrl from "./korope.webp";
 // The motorcycle picture. Kept from the earlier cutout.
-import okadaUrl from "./okada.png";
+import okadaUrl from "./okada.webp";
 // The six rides cropped from the first concept sheet.
-import danfoUrl from "./danfo.png";
-import molueUrl from "./molue.png";
-import taxiUrl from "./taxi.png";
-import deliveryUrl from "./delivery.png";
-import tipperUrl from "./tipper.png";
-import suvUrl from "./suv.png";
+import danfoUrl from "./danfo.webp";
+import molueUrl from "./molue.webp";
+import taxiUrl from "./taxi.webp";
+import deliveryUrl from "./delivery.webp";
+import tipperUrl from "./tipper.webp";
+import suvUrl from "./suv.webp";
 // The five rides cropped from the second concept sheet.
-import dangoteUrl from "./dangote.png";
-import policeUrl from "./police.png";
-import lexusUrl from "./lexus.png";
-import fayawoUrl from "./fayawo.png";
-import micraUrl from "./micra.png";
+import dangoteUrl from "./dangote.webp";
+import policeUrl from "./police.webp";
+import lexusUrl from "./lexus.webp";
+import fayawoUrl from "./fayawo.webp";
+import micraUrl from "./micra.webp";
 // The six rides cropped from the third concept sheet.
-import brtUrl from "./brt.png";
-import peugeotUrl from "./peugeot.png";
-import purewaterUrl from "./purewater.png";
-import tractorUrl from "./tractor.png";
-import benzgleUrl from "./benzgle.png";
-import benzcoupeUrl from "./benzcoupe.png";
+import brtUrl from "./brt.webp";
+import peugeotUrl from "./peugeot.webp";
+import purewaterUrl from "./purewater.webp";
+import tractorUrl from "./tractor.webp";
+import benzgleUrl from "./benzgle.webp";
+import benzcoupeUrl from "./benzcoupe.webp";
 
 // Base hill-climb numbers. Each ride multiplies or replaces these.
 import {
@@ -33,8 +35,6 @@ import {
   NOSE_DOWN,
   STICK,
   WHEELIE,
-  WHEEL_R,
-  WHEEL_X,
   WHEEL_Y,
 } from "./constants";
 
@@ -56,10 +56,6 @@ function ride(opts) {
     natW: opts.natW,
     // Natural pixel height of the cutout.
     natH: opts.natH,
-    // Wheel midpoint as a fraction of the picture width.
-    midX: opts.midX,
-    // Wheel vertical center as a fraction of the picture height.
-    midY: opts.midY,
     // Forward push while gas is held.
     accel: opts.accel,
     // How hard brake and Left pull the speed down.
@@ -76,16 +72,14 @@ function ride(opts) {
     noseDown: opts.noseDown,
     // How hard the body sticks to the slope. Higher is more stable.
     stick: opts.stick,
-    // Half the wheelbase. Larger values make a longer ride.
-    wheelX: opts.wheelX,
     // How far the wheels sit below the body center.
     wheelY: opts.wheelY,
-    // Tire radius. Larger tires ride over chatter more easily.
-    wheelR: opts.wheelR,
     // Ground drag strength. Higher scrub makes the ride feel heavier.
     drag: opts.drag,
     // How fast spin fades. Higher keeps a heavy ride from flipping forever.
     spinDamp: opts.spinDamp,
+    // Drawing anchors and collision contacts share the PNG landmarks.
+    ...vehicleGeometry(opts),
   };
 }
 
@@ -94,14 +88,12 @@ export const VEHICLES = {
   // Beginner keke. Light, steady, thrifty.
   korope: ride({
     id: "korope",
-    name: "Korope",
+    name: "Keke",
     blurb: "Small body, strong spirit.",
     url: koropeUrl,
     width: 107,
     natW: 307,
     natH: 203,
-    midX: 0.575,
-    midY: 176 / 203,
     // Modest push. Easy to learn.
     accel: ACCEL * 0.95,
     brake: BRAKE * 1.0,
@@ -115,9 +107,7 @@ export const VEHICLES = {
     noseDown: NOSE_DOWN * 0.9,
     // Steady on the slope.
     stick: STICK * 1.15,
-    wheelX: WHEEL_X * 0.95,
     wheelY: WHEEL_Y,
-    wheelR: WHEEL_R,
     drag: 0.55,
     spinDamp: 0.85,
   }),
@@ -130,8 +120,6 @@ export const VEHICLES = {
     width: 130,
     natW: 421,
     natH: 358,
-    midX: 199 / 421,
-    midY: 310 / 358,
     // Snappy launch.
     accel: ACCEL * 1.22,
     brake: BRAKE * 0.95,
@@ -144,9 +132,7 @@ export const VEHICLES = {
     noseDown: NOSE_DOWN * 1.22,
     // Needs care on rough landings, but holds the opening road.
     stick: STICK * 1.05,
-    wheelX: WHEEL_X * 0.88,
     wheelY: WHEEL_Y * 0.95,
-    wheelR: WHEEL_R * 0.92,
     drag: 0.48,
     spinDamp: 0.75,
   }),
@@ -159,8 +145,6 @@ export const VEHICLES = {
     width: 128,
     natW: 394,
     natH: 188,
-    midX: 0.551,
-    midY: 0.75,
     // Strong acceleration for an all-rounder.
     accel: ACCEL * 1.08,
     brake: BRAKE * 1.0,
@@ -172,9 +156,7 @@ export const VEHICLES = {
     noseDown: NOSE_DOWN * 1.0,
     // A little bounce, still steadier than the bike and the taxi.
     stick: STICK * 1.0,
-    wheelX: WHEEL_X * 1.08,
     wheelY: WHEEL_Y,
-    wheelR: WHEEL_R * 1.0,
     drag: 0.55,
     spinDamp: 0.8,
   }),
@@ -187,8 +169,6 @@ export const VEHICLES = {
     width: 155,
     natW: 489,
     natH: 170,
-    midX: 0.516,
-    midY: 0.759,
     // Slow to get going.
     accel: ACCEL * 0.55,
     // Soft brakes. Needs distance.
@@ -203,9 +183,7 @@ export const VEHICLES = {
     // Long body holds the slope, but crests are harsh.
     stick: STICK * 1.25,
     // Long wheelbase.
-    wheelX: WHEEL_X * 1.45,
     wheelY: WHEEL_Y * 1.05,
-    wheelR: WHEEL_R * 0.95,
     // Heavy scrub.
     drag: 0.72,
     spinDamp: 1.15,
@@ -219,8 +197,6 @@ export const VEHICLES = {
     width: 115,
     natW: 430,
     natH: 158,
-    midX: 0.51,
-    midY: 0.772,
     // Sharp launch.
     accel: ACCEL * 1.38,
     brake: BRAKE * 1.2,
@@ -232,11 +208,8 @@ export const VEHICLES = {
     noseDown: NOSE_DOWN * 1.05,
     // Low clearance. Rough landings hurt more than the SUV.
     stick: STICK * 0.92,
-    wheelX: WHEEL_X * 0.98,
     // Sits lower on the chassis.
     wheelY: WHEEL_Y * 0.85,
-    // Smaller tires.
-    wheelR: WHEEL_R * 0.82,
     drag: 0.48,
     spinDamp: 0.7,
   }),
@@ -244,13 +217,11 @@ export const VEHICLES = {
   delivery: ride({
     id: "delivery",
     name: "Delivery Truck",
-    blurb: "Deliver the goods. Keep them aboard.",
+    blurb: "Steady deliveries. Slower pace, gentler handling.",
     url: deliveryUrl,
     width: 125,
     natW: 427,
     natH: 172,
-    midX: 0.445,
-    midY: 0.746,
     accel: ACCEL * 0.95,
     brake: BRAKE * 0.95,
     maxSpeed: MAX_SPEED * 0.95,
@@ -259,11 +230,9 @@ export const VEHICLES = {
     // Soft air control. Cargo makes flips sluggish.
     wheelie: WHEELIE * 0.78,
     noseDown: NOSE_DOWN * 0.78,
-    // Soft suspension feel.
+    // Gentler slope alignment; no spring suspension is simulated.
     stick: STICK * 0.78,
-    wheelX: WHEEL_X * 1.12,
     wheelY: WHEEL_Y * 1.0,
-    wheelR: WHEEL_R * 1.0,
     drag: 0.6,
     spinDamp: 0.9,
   }),
@@ -276,8 +245,6 @@ export const VEHICLES = {
     width: 145,
     natW: 464,
     natH: 208,
-    midX: 0.46,
-    midY: 0.678,
     // Strong enough to climb, not snappy.
     accel: ACCEL * 0.88,
     brake: BRAKE * 0.82,
@@ -291,10 +258,7 @@ export const VEHICLES = {
     noseDown: NOSE_DOWN * 0.38,
     // Excellent traction feel on the slope.
     stick: STICK * 1.4,
-    wheelX: WHEEL_X * 1.28,
     wheelY: WHEEL_Y * 1.15,
-    // Large tires.
-    wheelR: WHEEL_R * 1.35,
     drag: 0.78,
     spinDamp: 1.25,
   }),
@@ -307,8 +271,6 @@ export const VEHICLES = {
     width: 125,
     natW: 468,
     natH: 179,
-    midX: 0.515,
-    midY: 0.706,
     accel: ACCEL * 1.2,
     brake: BRAKE * 1.1,
     maxSpeed: MAX_SPEED * 1.15,
@@ -317,26 +279,21 @@ export const VEHICLES = {
     fuelBurn: FUEL_BURN * 1.4,
     wheelie: WHEELIE * 0.85,
     noseDown: NOSE_DOWN * 0.85,
-    // Forgiving suspension.
+    // Stronger slope alignment.
     stick: STICK * 1.28,
-    wheelX: WHEEL_X * 1.12,
     wheelY: WHEEL_Y * 1.1,
-    // Tall tires and clearance.
-    wheelR: WHEEL_R * 1.22,
     drag: 0.58,
     spinDamp: 0.95,
   }),
-  // Articulated cement hauler. Slow, planted, thirsty.
+  // Rigid cement hauler. Slow, planted, thirsty.
   dangote: ride({
     id: "dangote",
     name: "Dangote Truck",
-    blurb: "The Heavyweight. Slow and steady, but nothing stops the load.",
+    blurb: "Heavy load. Plan your climbs and brake early.",
     url: dangoteUrl,
     width: 160,
     natW: 595,
     natH: 184,
-    midX: 0.55,
-    midY: 0.78,
     // Strong torque for hills, still slow to top out.
     accel: ACCEL * 0.78,
     // Soft brakes. Needs a long runway.
@@ -352,9 +309,7 @@ export const VEHICLES = {
     // Long multi-axle body holds the slope hard.
     stick: STICK * 1.55,
     // Longest wheelbase.
-    wheelX: WHEEL_X * 1.65,
     wheelY: WHEEL_Y * 1.1,
-    wheelR: WHEEL_R * 1.15,
     // Heavy scrub.
     drag: 0.88,
     spinDamp: 1.4,
@@ -368,8 +323,6 @@ export const VEHICLES = {
     width: 125,
     natW: 406,
     natH: 161,
-    midX: 0.53,
-    midY: 0.71,
     // Solid chase pace.
     accel: ACCEL * 1.12,
     brake: BRAKE * 1.1,
@@ -380,10 +333,8 @@ export const VEHICLES = {
     noseDown: NOSE_DOWN * 0.75,
     // Wide stance and knobby tires.
     stick: STICK * 1.32,
-    wheelX: WHEEL_X * 1.1,
     wheelY: WHEEL_Y * 1.08,
     // Tall off-road rubber.
-    wheelR: WHEEL_R * 1.18,
     drag: 0.58,
     spinDamp: 1.0,
   }),
@@ -396,8 +347,6 @@ export const VEHICLES = {
     width: 125,
     natW: 471,
     natH: 170,
-    midX: 0.497,
-    midY: 0.789,
     // Smooth, quick enough for the express.
     accel: ACCEL * 1.18,
     brake: BRAKE * 1.15,
@@ -408,9 +357,7 @@ export const VEHICLES = {
     noseDown: NOSE_DOWN * 0.8,
     // Balanced grip. Not a tipper, not a bike.
     stick: STICK * 1.15,
-    wheelX: WHEEL_X * 1.05,
     wheelY: WHEEL_Y * 1.0,
-    wheelR: WHEEL_R * 1.05,
     drag: 0.52,
     spinDamp: 0.9,
   }),
@@ -423,8 +370,6 @@ export const VEHICLES = {
     width: 125,
     natW: 466,
     natH: 188,
-    midX: 0.515,
-    midY: 0.705,
     // Quick getaway.
     accel: ACCEL * 1.32,
     brake: BRAKE * 1.05,
@@ -438,10 +383,8 @@ export const VEHICLES = {
     noseDown: NOSE_DOWN * 1.15,
     // Low stability from the rake.
     stick: STICK * 0.72,
-    wheelX: WHEEL_X * 1.0,
     // Tall clearance from the lift.
     wheelY: WHEEL_Y * 1.2,
-    wheelR: WHEEL_R * 1.1,
     drag: 0.5,
     spinDamp: 0.65,
   }),
@@ -449,13 +392,11 @@ export const VEHICLES = {
   micra: ride({
     id: "micra",
     name: "Micra",
-    blurb: "The Nimble One. Sips fuel and weaves through any gap.",
+    blurb: "Small car. Plenty heart. Nimble and fuel-efficient.",
     url: micraUrl,
     width: 115,
     natW: 336,
     natH: 129,
-    midX: 0.496,
-    midY: 0.804,
     // Peppy for its size.
     accel: ACCEL * 1.05,
     brake: BRAKE * 1.1,
@@ -468,10 +409,7 @@ export const VEHICLES = {
     // Light body gets tossed on rough landings.
     stick: STICK * 0.82,
     // Short wheelbase.
-    wheelX: WHEEL_X * 0.82,
     wheelY: WHEEL_Y * 0.9,
-    // Small tires struggle on chatter.
-    wheelR: WHEEL_R * 0.78,
     drag: 0.45,
     spinDamp: 0.7,
   }),
@@ -484,8 +422,6 @@ export const VEHICLES = {
     width: 160,
     natW: 547,
     natH: 160,
-    midX: 0.52,
-    midY: 0.78,
     // Slow off the line.
     accel: ACCEL * 0.62,
     brake: BRAKE * 0.72,
@@ -498,9 +434,7 @@ export const VEHICLES = {
     noseDown: NOSE_DOWN * 0.35,
     // Long wheelbase holds the slope.
     stick: STICK * 1.35,
-    wheelX: WHEEL_X * 1.55,
     wheelY: WHEEL_Y * 1.05,
-    wheelR: WHEEL_R * 1.05,
     drag: 0.74,
     spinDamp: 1.2,
   }),
@@ -513,8 +447,6 @@ export const VEHICLES = {
     width: 115,
     natW: 458,
     natH: 150,
-    midX: 0.51,
-    midY: 0.8,
     accel: ACCEL * 1.05,
     brake: BRAKE * 1.0,
     maxSpeed: MAX_SPEED * 1.02,
@@ -524,9 +456,7 @@ export const VEHICLES = {
     noseDown: NOSE_DOWN * 0.95,
     // Rugged and planted.
     stick: STICK * 1.12,
-    wheelX: WHEEL_X * 1.0,
     wheelY: WHEEL_Y * 0.92,
-    wheelR: WHEEL_R * 0.95,
     drag: 0.52,
     spinDamp: 0.88,
   }),
@@ -534,13 +464,11 @@ export const VEHICLES = {
   purewater: ride({
     id: "purewater",
     name: "Pure Water Truck",
-    blurb: "Cold water for the road. Watch the load on the bumps.",
+    blurb: "Cold water for the road. Take the bumps slowly.",
     url: purewaterUrl,
     width: 130,
     natW: 490,
     natH: 182,
-    midX: 0.5,
-    midY: 0.76,
     accel: ACCEL * 0.9,
     brake: BRAKE * 0.9,
     maxSpeed: MAX_SPEED * 0.88,
@@ -551,9 +479,7 @@ export const VEHICLES = {
     noseDown: NOSE_DOWN * 0.7,
     // Top-heavy cargo.
     stick: STICK * 0.85,
-    wheelX: WHEEL_X * 1.15,
     wheelY: WHEEL_Y * 1.05,
-    wheelR: WHEEL_R * 1.05,
     drag: 0.62,
     spinDamp: 0.92,
   }),
@@ -566,23 +492,18 @@ export const VEHICLES = {
     width: 155,
     natW: 481,
     natH: 180,
-    midX: 0.48,
-    midY: 0.72,
     // Strong pull, not a highway machine.
     accel: ACCEL * 0.85,
     brake: BRAKE * 0.8,
     maxSpeed: MAX_SPEED * 0.55,
     maxReverse: MAX_REVERSE * 0.6,
-    fuelBurn: FUEL_BURN * 1.45,
+    fuelBurn: FUEL_BURN * 1.0,
     wheelie: WHEELIE * 0.45,
     noseDown: NOSE_DOWN * 0.45,
     // Huge rear rubber digs in.
     stick: STICK * 1.48,
     // Long tractor-plus-trailer span.
-    wheelX: WHEEL_X * 1.5,
     wheelY: WHEEL_Y * 1.2,
-    // Big farm tires.
-    wheelR: WHEEL_R * 1.4,
     drag: 0.8,
     spinDamp: 1.3,
   }),
@@ -595,8 +516,6 @@ export const VEHICLES = {
     width: 125,
     natW: 492,
     natH: 182,
-    midX: 0.51,
-    midY: 0.78,
     accel: ACCEL * 1.28,
     brake: BRAKE * 1.15,
     maxSpeed: MAX_SPEED * 1.22,
@@ -606,9 +525,7 @@ export const VEHICLES = {
     wheelie: WHEELIE * 0.78,
     noseDown: NOSE_DOWN * 0.78,
     stick: STICK * 1.3,
-    wheelX: WHEEL_X * 1.12,
     wheelY: WHEEL_Y * 1.08,
-    wheelR: WHEEL_R * 1.18,
     drag: 0.55,
     spinDamp: 0.98,
   }),
@@ -621,8 +538,6 @@ export const VEHICLES = {
     width: 125,
     natW: 477,
     natH: 169,
-    midX: 0.51,
-    midY: 0.78,
     // Snappier than the regular GLE.
     accel: ACCEL * 1.35,
     brake: BRAKE * 1.2,
@@ -633,9 +548,7 @@ export const VEHICLES = {
     wheelie: WHEELIE * 0.92,
     noseDown: NOSE_DOWN * 0.92,
     stick: STICK * 1.18,
-    wheelX: WHEEL_X * 1.08,
     wheelY: WHEEL_Y * 1.02,
-    wheelR: WHEEL_R * 1.12,
     drag: 0.5,
     spinDamp: 0.88,
   }),
@@ -663,18 +576,15 @@ function stars(value, low, high) {
   return Math.max(1, Math.min(5, Math.round(1 + t * 4)));
 }
 
-// Comparable bars derived from the same numbers the physics uses.
+// Measured by npm run balance using the same fixed-step physics as gameplay.
+// Landing recovery is a controlled drop test, not a promise of surviving every jump.
 export function vehicleRatings(vehicle) {
-  // The ride to score.
   const v = getVehicle(vehicle.id || vehicle);
-  // Road pace from the speed cap.
-  const speed = stars(v.maxSpeed, 180, 520);
-  // Climb mixes push, grip, and tire size.
-  const climbing = stars(v.accel * (0.55 + v.stick * 0.12) * (v.wheelR / WHEEL_R), 220, 780);
-  // Stability rewards grip and wheelbase, and punishes snappy air flips.
-  const stability = stars(v.stick * 22 + (v.wheelX / WHEEL_X) * 28 - v.wheelie * 2.4, 10, 160);
-  // Higher fuel economy means less fuel burned.
-  const fuelEconomy = stars(28 - v.fuelBurn, 0, 24);
-  // The four bars for the card.
-  return { speed, climbing, stability, fuelEconomy };
+  const m = benchmarks[v.id];
+  return {
+    speed: stars(m.speed,180,500),
+    climbing: stars(m.climbGrade,20,90),
+    stability: stars(m.landingRecoveries,0,10),
+    fuelEconomy: stars(m.economy,25,200),
+  };
 }

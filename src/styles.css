@@ -1172,3 +1172,65 @@ th {
   }
 /* Ends the desktop block. */
 }
+
+/* Keep the selected card readable without forcing three cards onto a phone. */
+@media (max-width: 560px) {
+  .ride-track { grid-template-columns: minmax(0, 1fr); }
+  .ride-side { display: none; }
+  .ride-name { text-align: center; font-size: 20px; }
+  .ride-arrow { width: 40px; height: 44px; }
+  .pedals { width: 22%; gap: 5px; }
+  .pedal { min-height: 44px; border-radius: 10px; }
+  .lost-backdrop { position: fixed; overflow-y: auto; }
+  .lost-pop { margin-block: auto; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation: none !important; transition: none !important; }
+}
+
+.terrain-cue {
+  color: #fff1c9;
+  border-left: 3px solid #f0b400;
+  padding: 7px 10px;
+  margin: 6px 0;
+  background: #27313e;
+  border-radius: 0 6px 6px 0;
+  font-size: clamp(12px, 2.7vw, 15px);
+  line-height: 1.35;
+}
+
+/* Mobile picker: the ride and primary action come before optional instructions. */
+.start-panel { display: flex; flex-direction: column; }
+.start-panel > .actions { order: 1; }
+.driving-help { order: 2; margin-top: 20px; }
+.driving-help summary { cursor: pointer; font-weight: 700; padding: 12px 0; }
+.vehicle-loading { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; padding: 20px; background: #182432ed; color: white; z-index: 1; }
+.rotate-tip { display: none; }
+.pedal { touch-action: none; user-select: none; -webkit-user-select: none; }
+@media (max-width: 560px) and (orientation: portrait) {
+  .start-panel { padding: 18px 12px; }
+  .start-panel h1 { font-size: 38px; margin-bottom: 6px; }
+  .start-panel .lead { font-size: 16px; line-height: 1.4; }
+  .start-panel h2 { font-size: 22px; margin: 14px 0 10px; }
+  .start-panel > .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .start-panel > .actions > button:first-child { grid-column: 1 / -1; min-height: 52px; }
+  .page-playing { padding: max(10px, env(safe-area-inset-top)) 8px max(12px, env(safe-area-inset-bottom)); }
+  .rotate-tip { display: block; color: #d4dfed; text-align: center; font-size: 14px; margin: 12px 0; }
+  .stage { padding-bottom: 104px; background: #182432; }
+  .stage .pedals { width: 42%; bottom: 14px; }
+  .stage .pedal { min-height: 72px; font-size: 20px; }
+  .vehicle-loading { bottom: 104px; }
+}
+@media (orientation: landscape) and (max-height: 600px) {
+  .page-playing { max-width: none; padding: max(4px, env(safe-area-inset-top)) max(8px, env(safe-area-inset-right)) max(4px, env(safe-area-inset-bottom)) max(8px, env(safe-area-inset-left)); }
+  .page-playing .hud { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0; padding: 0; }
+  .page-playing .hud-meta { display: flex; gap: 12px; align-items: center; }
+  .page-playing .score, .page-playing .area { margin: 0; font-size: 16px; }
+  .page-playing .hud .button { min-height: 36px; font-size: 13px; padding: 0 10px; }
+  .page-playing .fuel { gap: 6px; }
+  .page-playing .jerry { transform: scale(.7); transform-origin: center; margin-block: -8px; }
+  .page-playing .terrain-cue { font-size: 12px; padding: 4px 8px; margin: 3px 0; }
+  .page-playing .hint { display: none; }
+  .stage .pedals { width: 100px; bottom: 8px; }
+  .stage .pedal { min-height: 52px; font-size: 16px; }
+}

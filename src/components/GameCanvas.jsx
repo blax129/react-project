@@ -1,5 +1,8 @@
+import { terrainCue } from "../game/terrain";
+import { createSimulationClock } from "../game/simulationClock";
+import { createInputState, GAS_KEYS, BRAKE_KEYS } from "../game/controls";
 // React helpers for the canvas element and the animation loop.
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 // The picture size.
 import { WORLD_H, WORLD_W } from "../game/constants";
 // One frame of movement, and the whole-number score.
@@ -11,10 +14,20 @@ import { drawWorld } from "../game/draw";
 // The beeps.
 import { playCrash, playFuel, unlockSound } from "../game/sound";
 
+import { vehicleImages } from "../game/vehicleImages";
+import { getVehicle } from "../game/vehicles";
+
 // The road. React does not redraw this every score change. The loop does.
-export default function GameCanvas({ runId, vehicleId, visible, pausedRef, controlsRef, onScore, onFuel, onArea, onOver, onTogglePause }) {
+export default function GameCanvas({ runId, vehicleId, visible, pausedRef, controlsRef, onScore, onFuel, onArea, onChallenge, onOver, onTogglePause }) {
   // The canvas element.
   const canvasRef = useRef(null);
+  const [assetState, setAssetState] = useState("loading");
+  const [retry, setRetry] = useState(0);
+  const readyRef = useRef(false);
+  const visibleRef = useRef(visible);
+  visibleRef.current = visible;
+  const inputRef = useRef(null);
+  const overRef = useRef(false);
   // The ride the player picked. A ref so the loop can read it without restarting.
   const vehicleRef = useRef(vehicleId);
   // Keeps the ride id current when the parent changes it.
@@ -27,6 +40,8 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
   const onFuelRef = useRef(onFuel);
   // The latest place-name callback.
   const onAreaRef = useRef(onArea);
+  const onChallengeRef = useRef(onChallenge);
+  onChallengeRef.current = onChallenge;
   // The latest crash callback.
   const onOverRef = useRef(onOver);
   // The latest pause callback.
@@ -50,6 +65,11 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
     const ctx = canvas.getContext("2d");
     // A new run with the ride the player picked.
     const run = createRun(vehicleRef.current);
+    overRef.current = false;
+    const clock = createSimulationClock();
+    const input = createInputState(controlsRef.current);
+    input.clear();
+    inputRef.current = input;
     // The browser's request id, so cleanup can stop the loop.
     let frame = 0;
     // The time of the previous frame.
@@ -58,11 +78,20 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
     let lastScoreAt = 0;
     // False after cleanup, so a late frame does nothing.
     let alive = true;
+    let ready = false;
+    readyRef.current = false;
+    setAssetState("loading");
+    vehicleImages.load(getVehicle(vehicleRef.current).url).then(() => {
+      if (!alive) return;
+      ready = true; readyRef.current = true; input.clear(); clock.reset(); last = performance.now();
+      setAssetState("ready");
+    }).catch(() => { if (alive) setAssetState("error"); });
 
     // Matches the canvas pixels to the box on the page.
     function fit() {
       // The box around the canvas.
-      const width = canvas.parentElement.clientWidth;
+      const availableWidth = canvas.parentElement.parentElement.clientWidth;
+      let width = availableWidth;
       // A hidden leaderboard visit reports no width. Keep the old picture size.
       if (width < 10) {
         // Leaves the canvas pixels alone.
@@ -74,16 +103,19 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
       // How tall the window is, including a phone's dynamic toolbar.
       const viewH = window.visualViewport ? window.visualViewport.height : window.innerHeight;
       // 120 leaves room for the score bar and safe edges on a short phone.
-      const room = viewH - 120;
+      const room = viewH - (canvas.getBoundingClientRect().top + window.scrollY) - 12;
       // Shrink the picture on landscape phones so the pedals stay on screen.
       if (room > 120 && height > room) {
         // Cap to the free height.
         height = room;
+        width = height * WORLD_W / WORLD_H;
       // Closes the block above.
       }
       // Phone screens use more pixels than CSS pixels. Cap it so the picture stays light.
-      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      const dpr = Math.min(window.devicePixelRatio || 1, window.matchMedia("(pointer: coarse)").matches ? 1.5 : 2);
       // The real pixel width.
+      canvas.parentElement.style.width = `${width}px`;
+      canvas.parentElement.style.marginInline = "auto";
       canvas.width = Math.floor(width * dpr);
       // The real pixel height.
       canvas.height = Math.floor(height * dpr);
@@ -119,20 +151,20 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
       }
       // Asks for the next frame.
       frame = requestAnimationFrame(loop);
-      // A paused run stays on the current picture.
-      if (pausedRef.current) {
-        // Draws the same hills with the Paused label. Pedals stay held.
-        drawWorld(ctx, run, true, vehicleRef.current);
-        // Skips movement.
-        return;
-      // Closes the block above.
-      }
-      // Seconds since the last frame. Capped so a hidden tab does not teleport the tricycle.
-      const dt = Math.min(0.033, (now - last) / 1000);
-      // Remembers this frame's time.
+      const dt = (now-last)/1000;
       last = now;
-      // Gas and brake stay true for as long as the pedal is held.
-      const result = stepRun(run, dt, controlsRef.current);
+      if (!ready || pausedRef.current || !visibleRef.current || document.hidden) {
+        input.clear();
+        clock.reset();
+        if (visibleRef.current) drawWorld(ctx,run,pausedRef.current,vehicleRef.current);
+        return;
+      }
+      let result = "idle";
+      clock.advance(dt, (step) => {
+        const event = stepRun(run,step,controlsRef.current);
+        if (event === "crash") { result=event; return false; }
+        if (event === "fuel" || result === "idle") result=event;
+      });
       // A fuel can gets a short blip.
       if (result === "fuel") {
         // Plays it.
@@ -141,6 +173,8 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
       }
       // A flip or an empty tank ends the run.
       if (result === "crash") {
+        overRef.current = true;
+        input.clear();
         // Plays the low buzz.
         playCrash();
         // The whole-number score, which is the distance.
@@ -151,6 +185,7 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
         onFuelRef.current(run.fuel);
         // The area where the run ended.
         onAreaRef.current(areaAt(run.x).name);
+        onChallengeRef.current?.(terrainCue(run.x));
         // Opens the game-over panel and tells it why the run ended.
         onOverRef.current(points, run.endReason);
       } else if (now - lastScoreAt > 100) {
@@ -162,6 +197,7 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
         onFuelRef.current(run.fuel);
         // The part of Lagos under the korope.
         onAreaRef.current(areaAt(run.x).name);
+        onChallengeRef.current?.(terrainCue(run.x));
       // Closes the block above.
       }
       // Draws the road after the move. The ride matches the picker.
@@ -172,58 +208,32 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
     // The first frame.
     frame = requestAnimationFrame(loop);
 
-    // Keys that push the gas pedal.
-    const gasKeys = ["ArrowRight", "ArrowUp", "KeyD", "Space"];
-    // Keys that push the brake.
-    const brakeKeys = ["ArrowLeft", "ArrowDown", "KeyA"];
-
-    // Keyboard controls. They listen on the window so the canvas does not need focus.
     function onKeyDown(event) {
-      // Gas or brake. Arrow keys would otherwise scroll the page.
-      if (gasKeys.includes(event.code) || brakeKeys.includes(event.code)) {
-        // Stops the page from scrolling.
+      if (!ready || !visibleRef.current || document.hidden || run.over) return;
+      if (event.target?.closest?.('input, textarea, select, [contenteditable="true"]')) return;
+      if (event.code === "KeyP") {
+        if (!event.repeat) { input.clear(); clock.reset(); last=performance.now(); onPauseRef.current(); }
+        return;
+      }
+      if (pausedRef.current || (event.code === "Space" && event.target?.closest?.('button'))) return;
+      const name = GAS_KEYS.includes(event.code) ? "gas" : BRAKE_KEYS.includes(event.code) ? "brake" : null;
+      if (name) {
         event.preventDefault();
-        // A key is a user gesture, so sound is allowed after this.
         unlockSound();
-      // Closes the block above.
+        // A held key must be released after a focus/pause interruption.
+        if (!event.repeat) input.press(`key:${event.code}`,name);
       }
-      // Holds the gas while the key is down.
-      if (gasKeys.includes(event.code)) {
-        // The physics reads this every frame.
-        controlsRef.current.gas = true;
-      // Closes the block above.
-      }
-      // Holds the brake while the key is down.
-      if (brakeKeys.includes(event.code)) {
-        // The physics reads this every frame.
-        controlsRef.current.brake = true;
-      // Closes the block above.
-      }
-      // P pauses or resumes. A finished run ignores it.
-      if (event.code === "KeyP" && !run.over) {
-        // Tells the parent to flip the pause flag.
-        onPauseRef.current();
-      // Closes the block above.
-      }
-    // Closes the block above.
     }
-
-    // Letting go of a key releases that pedal.
-    function onKeyUp(event) {
-      // Releases the gas.
-      if (gasKeys.includes(event.code)) {
-        // The moruwa stops accelerating.
-        controlsRef.current.gas = false;
-      // Closes the block above.
-      }
-      // Releases the brake.
-      if (brakeKeys.includes(event.code)) {
-        // The moruwa stops braking.
-        controlsRef.current.brake = false;
-      // Closes the block above.
-      }
-    // Closes the block above.
+    function onKeyUp(event) { input.release(`key:${event.code}`); }
+    function suspend() {
+      input.clear();
+      clock.reset();
+      last=performance.now();
+      if (visibleRef.current && !run.over && !pausedRef.current) onPauseRef.current();
     }
+    function onVisibility() { if (document.hidden) suspend(); }
+    window.addEventListener("blur",suspend);
+    document.addEventListener("visibilitychange",onVisibility);
 
     // Starts listening for keys.
     window.addEventListener("keydown", onKeyDown);
@@ -234,6 +244,9 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
     return () => {
       // Blocks a frame that was already queued.
       alive = false;
+      input.clear();
+      window.removeEventListener("blur",suspend);
+      document.removeEventListener("visibilitychange",onVisibility);
       // Cancels that frame.
       cancelAnimationFrame(frame);
       // Stops the resize listener.
@@ -251,11 +264,12 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
     // Closes this object.
     };
     // A new runId starts a new loop. Pause and score updates do not.
-  }, [runId, pausedRef, controlsRef]);
+  }, [runId, retry, pausedRef, controlsRef]);
 
   // The road is hidden on the leaderboard, so measure it again when it returns.
   useEffect(() => {
     // Only a visible road has a real width.
+    inputRef.current?.clear();
     if (visible) {
       // Applies the current page width.
       fitRef.current();
@@ -263,24 +277,15 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
     }
   }, [visible]);
 
-  // Presses a pedal and keeps the events on that button until the finger lifts.
-  function pedalDown(event, name) {
-    // A phone tap should not scroll the page.
+  function pedalDown(event,name) {
     event.preventDefault();
-    // The first tap may unlock sound.
+    if (!readyRef.current || !visible || pausedRef.current || overRef.current || document.hidden) return;
     unlockSound();
-    // Later move and lift events stay on this button.
     event.currentTarget.setPointerCapture(event.pointerId);
-    // Holds that pedal.
-    controlsRef.current[name] = true;
-  // Closes the block above.
+    inputRef.current?.press(`pointer:${event.pointerId}`,name);
   }
-
-  // Releases a pedal.
-  function pedalUp(name) {
-    // Lets go.
-    controlsRef.current[name] = false;
-  // Closes the block above.
+  function pedalUp(event) {
+    inputRef.current?.release(`pointer:${event.pointerId}`);
   }
 
   // The picture, with Left/Brake on the left thumb and Right/Gas on the right.
@@ -289,26 +294,18 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
     <div className="stage">
       {/* The hills. */}
       <canvas ref={canvasRef} aria-label="Korope hills" />
+      {assetState !== "ready" && <div className="vehicle-loading" role="status">{assetState === "error" ? <><p>Could not load your ride. Check your connection.</p><button className="button" onClick={() => setRetry(n => n + 1)}>Retry</button></> : "Loading your ride…"}</div>}
       {/* Left thumb: back along the road, and brake in the air. */}
       <div className="pedals pedals-left">
-        {/* Back along the road. */}
-        <button
-          className="pedal left"
-          type="button"
-          onPointerDown={(event) => pedalDown(event, "left")}
-          onPointerUp={() => pedalUp("left")}
-          onPointerCancel={() => pedalUp("left")}
-        >
-          Left
-        {/* Closes the button. */}
-        </button>
+
         {/* Brake. On the road it rolls back. In the air it tips the nose down. */}
         <button
           className="pedal brake"
           type="button"
           onPointerDown={(event) => pedalDown(event, "brake")}
-          onPointerUp={() => pedalUp("brake")}
-          onPointerCancel={() => pedalUp("brake")}
+          onPointerUp={pedalUp}
+          onPointerCancel={pedalUp}
+          onLostPointerCapture={pedalUp}
         >
           Brake
         {/* Closes the button. */}
@@ -317,24 +314,15 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
       </div>
       {/* Right thumb: forward along the road, and gas in the air. */}
       <div className="pedals pedals-right">
-        {/* Forward along the road. */}
-        <button
-          className="pedal right"
-          type="button"
-          onPointerDown={(event) => pedalDown(event, "right")}
-          onPointerUp={() => pedalUp("right")}
-          onPointerCancel={() => pedalUp("right")}
-        >
-          Right
-        {/* Closes the button. */}
-        </button>
+
         {/* Gas. On the road it climbs. In the air it tips the nose up. */}
         <button
           className="pedal gas"
           type="button"
           onPointerDown={(event) => pedalDown(event, "gas")}
-          onPointerUp={() => pedalUp("gas")}
-          onPointerCancel={() => pedalUp("gas")}
+          onPointerUp={pedalUp}
+          onPointerCancel={pedalUp}
+          onLostPointerCapture={pedalUp}
         >
           Gas
         {/* Closes the button. */}

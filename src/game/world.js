@@ -17,87 +17,23 @@ import { hardship } from "./areas";
 // The ride the player picked, and its handling numbers.
 import { getVehicle } from "./vehicles";
 
-// The road height at this x. Smaller y is higher on the screen.
-export function groundY(x) {
-  // The flat starting height.
-  const base = 340;
-  // Roughness stays light for a short opening, then comes in quickly.
-  const fade = clamp((x - 80) / 280, 0, 1);
-  // 0 in CMS, 1 by Epe. Later areas grow taller hills.
-  const hard = hardship(x);
-  // 14 is the gentle opening. 52 is the extra height by Epe, still low enough to climb.
-  const amp = (14 + hard * 52) * fade;
-  // A long roll.
-  const roll = Math.sin(x / 170) * amp;
-  // Medium bumps, stronger than the long roll so the surface is uneven.
-  const bump = Math.sin(x / (64 - hard * 16) + 0.8) * amp * (0.34 + hard * 0.16);
-  // Close bumps, about one wheelbase apart, so the tires rise and fall.
-  const rough = Math.sin(x / 42) * (5 + hard * 5) * fade;
-  // A finer chatter on top of those bumps. Kept small so it shakes the ride without throwing it.
-  const chatter = Math.sin(x / 24 + 2.1) * (1.8 + hard * 1.6) * fade;
-  // Sharp crowns. These are the hills that throw the korope if the gas stays down.
-  const crown = Math.pow(Math.max(0, Math.sin(x / 240)), 2) * amp * (0.28 + hard * 0.4);
-  // Up the screen is a smaller y.
-  return base - roll - bump - rough - chatter - crown - launchHeight(x);
-}
-
-// A short ramp and a sudden drop. Fast riders leave the road here.
-function launchHeight(x) {
-  // The opening stretch stays smooth so the first seconds are for learning the pedals.
-  if (x < 800) {
-    // No ramp yet.
-    return 0;
-  }
-  // 0 in CMS, 1 by Epe.
-  const hard = hardship(x);
-  // Ramps start 1500 units apart and move closer. 520 is how much that gap shrinks.
-  const period = 1500 - hard * 520;
-  // Position inside the current gap.
-  const p = ((x % period) + period) % period;
-  // Short ramps at the start. By Epe they are much taller.
-  const height = 18 + hard * 46;
-  // The climb stays long enough to drive up.
-  const climb = 220;
-  // The lip gets shorter later, so the drop is sharper. 16 is the most it shrinks.
-  const lip = 42 - hard * 16;
-  // Rises toward the lip.
-  if (p < climb) {
-    // The climb.
-    return (p / climb) * height;
-  }
-  // The lip. A short drop is what throws the korope.
-  if (p < climb + lip) {
-    // Drops back to the rolling hills.
-    return height * (1 - (p - climb) / lip);
-  }
-  // Ordinary road until the next ramp.
-  return 0;
-}
-
-// How steep the road is. Positive means the road drops as x grows.
-export function groundSlope(x) {
-  // A short sample on each side of the wheel.
-  return (groundY(x + 8) - groundY(x - 8)) / 16;
-}
+import { groundY, groundSlope } from "./terrain";
+export { groundY, groundSlope } from "./terrain";
 
 // Builds a fresh ride. vehicleId picks which handling and wheel size to use.
-export function createRun(vehicleId) {
+export function createRun(vehicleId, terrain = { heightAt: groundY, slopeAt: groundSlope }) {
   // The ride from the picker. Unknown ids fall back to the korope.
   const vehicle = getVehicle(vehicleId);
   // The object stepRun changes every frame.
   const run = {
     // Which ride this is, so every frame can read its handling.
     vehicleId: vehicle.id,
-    // Half the wheelbase for this ride.
-    wheelX: vehicle.wheelX,
-    // How far the tires sit below the body center.
-    wheelY: vehicle.wheelY,
-    // Tire radius for this ride.
-    wheelR: vehicle.wheelR,
+    terrain,
+    wheels: vehicle.wheels,
     // Along the road.
     x: 40,
     // Near the road. reseat drops the tires onto it.
-    y: groundY(40) - 40,
+    y: terrain.heightAt(40) - 40,
     // Level, facing right. Positive rotation tips the nose down.
     angle: 0,
     // Spin speed, used in the air.
@@ -142,10 +78,9 @@ function localPoint(run, lx, ly) {
   };
 }
 
-// One wheel in world coordinates. side is -1 for the back wheel and 1 for the front.
-function wheelPoint(run, side) {
-  // The wheel sits wheelX ahead or behind, and wheelY below the middle.
-  return localPoint(run, side * run.wheelX, run.wheelY);
+// Each contact uses the same pixel landmark as its pictured wheel.
+function wheelPoint(run, wheel) {
+  return localPoint(run, wheel.x, wheel.y);
 }
 
 // True when the roof faces the road instead of the sky.
@@ -155,23 +90,18 @@ function upsideDown(angle, slope) {
 }
 
 // Moves the body so the lower wheel sits on the road.
-function reseat(run) {
-  // How far the body must rise. Y grows downward, so rising subtracts.
-  let lift = 0;
-  // Both wheels.
-  [-1, 1].forEach((side) => {
-    // This wheel.
-    const wheel = wheelPoint(run, side);
-    // How far the tire has sunk through the road.
-    const sunk = wheel.y + run.wheelR - groundY(wheel.x);
-    // The deeper wheel decides the lift.
-    if (sunk > lift) {
-      // Remember that depth.
-      lift = sunk;
-    }
-  });
-  // Pulls the body up out of the road.
-  run.y -= lift;
+export function reseat(run) {
+  const first = run.wheels[0], last = run.wheels.at(-1);
+  run.angle = Math.atan2(
+    run.terrain.heightAt(run.x + last.x) - run.terrain.heightAt(run.x + first.x)
+      - (last.y + last.r - first.y - first.r), last.x - first.x);
+  for (let i=0;i<3;i++) {
+    const lift = Math.max(...run.wheels.map(w => {
+      const p = wheelPoint(run,w);
+      return p.y+w.r-run.terrain.heightAt(p.x);
+    }));
+    run.y -= lift;
+  }
 }
 
 // Adds cans ahead of the rider.
@@ -195,12 +125,6 @@ function wrap(angle) {
   return ((angle + Math.PI) % turn + turn) % turn - Math.PI;
 }
 
-// Keeps a number between two limits.
-function clamp(value, low, high) {
-  // The limited number.
-  return Math.max(low, Math.min(high, value));
-}
-
 // Moves one frame. controls.gas and controls.brake stay true while the pedals are held.
 export function stepRun(run, dt, controls) {
   // A finished ride does not move.
@@ -211,28 +135,27 @@ export function stepRun(run, dt, controls) {
   // The handling for this ride.
   const vehicle = getVehicle(run.vehicleId);
   // A hidden tab must not throw the ride across the map.
-  const step = Math.min(0.033, dt);
-  // Right and Gas both drive toward the nose. Left and Brake both drive back along the road.
+  const step = Math.min(1 / 30, Math.max(0, Number.isFinite(dt) ? dt : 0));
+  if (!step) return "idle";
+  const roadY = run.terrain.heightAt;
+  const roadSlope = run.terrain.slopeAt;
+  // Right/Gas drive forward. Left/Brake stop, then reverse.
   const forwardHeld = Boolean(controls.gas) || Boolean(controls.right);
   // Either back control is enough to roll the other way.
   const backHeld = Boolean(controls.brake) || Boolean(controls.left);
-  // Forward drive only works while fuel remains.
-  const gas = forwardHeld && run.fuel > 0;
-  // The back pedals always work.
-  const brake = backHeld;
-  // Holding a forward pedal burns fuel at this ride's rate.
-  if (forwardHeld && run.fuel > 0) {
-    // The tank falls, and it cannot go below empty.
-    run.fuel = Math.max(0, run.fuel - vehicle.fuelBurn * step);
-  }
-  // How deep each tire is right now. A negative number means the tire is in the air.
-  const backBefore = tireSunk(run, -1);
-  // The front tire.
-  const frontBefore = tireSunk(run, 1);
-  // Touching means the tire has met the road, with a small grace so it does not chatter.
-  const grounded = backBefore > -3 || frontBefore > -3;
-  // The slope under the body, used to settle the wheels.
-  const hill = Math.atan(groundSlope(run.x));
+  const grounded = run.wheels.some(w => tireSunk(run, w) > -2);
+  const first = run.wheels[0], last = run.wheels.at(-1);
+  // Align to the wheel footprint, not a single bump below the centre.
+  const hill = Math.atan2(roadY(run.x+last.x)-roadY(run.x+first.x)
+    -(last.y+last.r-first.y-first.r), last.x-first.x);
+  const tangentSpeed = run.vx*Math.cos(hill)+run.vy*Math.sin(hill);
+  // Opposing pedals brake. A direction change must pass through zero first.
+  const requested = forwardHeld === backHeld ? 0 : (forwardHeld ? 1 : -1);
+  const stopping = (forwardHeld && backHeld) || (requested !== 0 && tangentSpeed*requested < -1);
+  const drive = !stopping && run.fuel > 0 ? requested : 0;
+  const gas = forwardHeld && !backHeld;
+  const brake = backHeld && !forwardHeld;
+  if (grounded && drive) run.fuel = Math.max(0,run.fuel-vehicle.fuelBurn*step);
 
   // In the air the pedals spin the ride. On the road they lean it and also drive.
   if (!grounded) {
@@ -249,35 +172,31 @@ export function stepRun(run, dt, controls) {
   } else {
     // Gas still leans the nose up, so a hard climb can leave the ground.
     if (gas) {
-      // A small wheelie. 0.08 keeps the nose from flipping while the tires are down.
-      run.angVel -= vehicle.wheelie * 0.08 * step;
+      // Mild ground lean; full rotation remains available in the air.
+      run.angVel -= vehicle.wheelie * 0.015 * step;
     }
     // Brake pushes the nose down onto the slope.
     if (brake) {
       // A small nose-down. The big flip is reserved for the air.
-      run.angVel += vehicle.noseDown * 0.08 * step;
+      run.angVel += vehicle.noseDown * 0.015 * step;
     }
     // Pulls the body back toward the slope so it rides the hill.
-    run.angVel += wrap(hill - run.angle) * vehicle.stick * step;
+    run.angVel += wrap(hill - run.angle) * vehicle.stick * 12 * step;
   }
   // Stops the spin from growing forever. Heavier rides damp faster.
-  run.angVel *= Math.exp(-vehicle.spinDamp * step);
+  run.angVel *= Math.exp(-(vehicle.spinDamp + (grounded ? 7 : 0)) * step);
 
   // Gravity always pulls down the screen.
   run.vy += GRAVITY * step;
-  // Drive force points out of the nose.
-  if (grounded && gas) {
-    // Forward.
-    run.vx += Math.cos(run.angle) * vehicle.accel * step;
-    // The matching vertical part when the nose is tilted.
-    run.vy += Math.sin(run.angle) * vehicle.accel * step;
-  }
-  // Brake pushes the other way and can roll backward.
-  if (grounded && brake) {
-    // Backward.
-    run.vx -= Math.cos(run.angle) * vehicle.brake * step;
-    // The matching vertical part.
-    run.vy -= Math.sin(run.angle) * vehicle.brake * step;
+  if (grounded && stopping) {
+    // Remove only along-road velocity, never push through zero into reverse.
+    const change = -Math.sign(tangentSpeed)*Math.min(Math.abs(tangentSpeed),vehicle.brake*step);
+    run.vx += Math.cos(hill)*change;
+    run.vy += Math.sin(hill)*change;
+  } else if (grounded && drive) {
+    const push = vehicle.accel * (drive < 0 ? 0.65 : 1) * drive * step;
+    run.vx += Math.cos(hill)*push;
+    run.vy += Math.sin(hill)*push;
   }
   // Tires scrub speed. Air does not.
   if (grounded) {
@@ -309,28 +228,23 @@ export function stepRun(run, dt, controls) {
 
   // Pushes any buried tire back onto the road.
   let crashed = false;
-  // Both wheels, back then front.
-  [-1, 1].forEach((side) => {
+  // Resolve each pictured axle from rear to front.
+  run.wheels.forEach((contact) => {
     // This tire after the move.
-    const wheel = wheelPoint(run, side);
+    const wheel = wheelPoint(run, contact);
     // The road under it.
-    const road = groundY(wheel.x);
+    const road = roadY(wheel.x);
     // How far the tire has sunk. Above the road this is negative.
-    const sunk = wheel.y + run.wheelR - road;
+    const sunk = wheel.y + contact.r - road;
     // Only a tire inside the ground needs a push.
     if (sunk <= 0) {
       // This tire is clear.
       return;
     }
     // The slope at the contact.
-    const slope = groundSlope(wheel.x);
-    // Landing with the roof toward the road is the loss. A steep tilt still rolls back onto the wheels.
-    if (upsideDown(run.angle, slope)) {
-      // The korope is upside down on the road.
-      crashed = true;
-      // Leave the body where it fell instead of planting the wheels.
-      return;
-    }
+    const slope = roadSlope(wheel.x);
+    // Upside-down contacts cannot lift the roof clear before its collision test.
+    if (upsideDown(run.angle, slope)) return;
     // Length of the uphill normal.
     const len = Math.sqrt(1 + slope * slope);
     // The normal points up out of the road. Y grows downward, so up is negative.
@@ -338,9 +252,9 @@ export function stepRun(run, dt, controls) {
     // The upward part.
     const ny = -1 / len;
     // Lifts the body out by the depth of the tire.
-    run.x += nx * sunk;
+    run.x += nx * sunk / len;
     // The vertical part of that lift.
-    run.y += ny * sunk;
+    run.y += ny * sunk / len;
     // Speed into the road, along the normal. Negative means sinking.
     const into = run.vx * nx + run.vy * ny;
     // Removes only the part that is digging in.
@@ -351,8 +265,8 @@ export function stepRun(run, dt, controls) {
       run.vy -= into * ny;
     }
   });
-  // The roof. These points sit above the cabin before the korope rotates.
-  [[-48, -30], [0, -32], [42, -28]].forEach(([lx, ly]) => {
+  // Roof landmarks are in the same local coordinates used to draw this ride.
+  vehicle.roof.forEach(([lx, ly]) => {
     // Already lost.
     if (crashed) {
       // Skip the rest.
@@ -361,9 +275,9 @@ export function stepRun(run, dt, controls) {
     // This spot on the roof, in the world.
     const roof = localPoint(run, lx, ly);
     // The slope under that spot.
-    const slope = groundSlope(roof.x);
+    const slope = roadSlope(roof.x);
     // The roof is in the dirt, and the cabin is upside down.
-    if (roof.y > groundY(roof.x) && upsideDown(run.angle, slope)) {
+    if (roof.y > roadY(roof.x) && upsideDown(run.angle, slope)) {
       // The roof hit the road.
       crashed = true;
     }
@@ -390,7 +304,7 @@ export function stepRun(run, dt, controls) {
     // Horizontal gap.
     const dx = can.x - run.x;
     // The can floats a little above the road.
-    const dy = groundY(can.x) - 36 - run.y;
+    const dy = roadY(can.x) - 36 - run.y;
     // Close enough to collect.
     if (dx * dx + dy * dy < CAN_REACH * CAN_REACH) {
       // The can is used up.
@@ -429,11 +343,9 @@ export function stepRun(run, dt, controls) {
 }
 
 // How far a tire has sunk into the road. Negative means it is above the road.
-function tireSunk(run, side) {
-  // The tire's place.
-  const wheel = wheelPoint(run, side);
-  // Depth under the surface.
-  return wheel.y + run.wheelR - groundY(wheel.x);
+function tireSunk(run, contact) {
+  const wheel = wheelPoint(run, contact);
+  return wheel.y + contact.r - run.terrain.heightAt(wheel.x);
 }
 
 // The whole number shown to the player. It is the distance along the road.

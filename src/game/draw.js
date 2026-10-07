@@ -7,25 +7,8 @@ import { AREAS, areaAt } from "./areas";
 // The ride the player picked, and its picture size.
 import { getVehicle } from "./vehicles";
 
-// One loaded picture per ride id.
-const sprites = {};
-
-// Loads the picture for this ride once, then reuses it every frame.
-function spriteFor(vehicle) {
-  // Already loading or ready.
-  if (sprites[vehicle.id]) {
-    // That picture.
-    return sprites[vehicle.id];
-  }
-  // A fresh image element.
-  const image = new Image();
-  // The cutout file for this ride.
-  image.src = vehicle.url;
-  // Remembers it for the next frame.
-  sprites[vehicle.id] = image;
-  // The picture.
-  return image;
-}
+import { vehicleImages } from "./vehicleImages";
+function spriteFor(vehicle) { return vehicleImages.get(vehicle.url); }
 
 // Paints one frame. The camera follows the ride. vehicleId is "korope" or "okada".
 export function drawWorld(ctx, run, paused, vehicleId) {
@@ -485,7 +468,7 @@ function drawVehicle(ctx, run, vehicleId) {
   // The loaded cutout.
   const sprite = spriteFor(vehicle);
   // The picture is not ready on the very first frame.
-  if (!sprite.complete || sprite.naturalWidth === 0) {
+  if (!sprite || !sprite.complete || sprite.naturalWidth === 0) {
     // Skip this frame.
     return;
   }
