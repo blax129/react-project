@@ -1,0 +1,22 @@
+---
+description: Explain hardcoded values and dense logic line by line
+alwaysApply: true
+---
+
+# Explain the hard lines
+
+When writing or editing code in this project, comment the lines a reader cannot understand by glancing at them.
+
+Comment these line by line, in plain language, directly above the line:
+
+- Hardcoded numbers, colors, ids, limits, and sample text. Say what the value is for.
+- Regex, route patterns like `/:username`, and template strings that build a link.
+- Storage, cloning, and id tricks (`localStorage`, `JSON.parse(JSON.stringify(...))`, `Date.now()`).
+- Conditions that decide what appears on screen (`step === "compose"`, empty checks, owner checks).
+
+```jsx
+// 240 characters keeps one whisper short enough for the card.
+maxLength={240}
+```
+
+Skip a comment when the line is already obvious, such as a closing brace or a label that repeats the text on screen.

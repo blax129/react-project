@@ -1,0 +1,39 @@
+<!-- This is the only page the browser loads by itself. -->
+<!DOCTYPE html>
+<!-- The page language is English. -->
+<html lang="en">
+  <!-- Setup that is not shown on the page. -->
+  <head>
+    <!-- Letters like names are stored as Unicode. -->
+    <meta charset="UTF-8" />
+    <!-- Fits the phone width, keeps zoom normal, and reaches the notch and home bar. -->
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <!-- Lets a phone bookmark open without the browser chrome. -->
+    <meta name="apple-mobile-web-app-capable" content="yes" />
+    <!-- The status bar stays dark like the page. -->
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <!-- The theme color matches the dark page. -->
+    <meta name="theme-color" content="#1c2430" />
+    <!-- The tab title. -->
+    <title>Korope</title>
+    <!-- Start the font download early. -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <!-- The font files come from this Google host. -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <!-- Fraunces is the title. Outfit is the plain text. -->
+    <link
+      href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,560&family=Outfit:wght@500;700&display=swap"
+      rel="stylesheet"
+    />
+    <!-- Closes the setup that the player does not see. -->
+  </head>
+  <!-- Everything the player sees sits in the body. -->
+  <body>
+    <!-- React draws the game inside this empty box. -->
+    <div id="root"></div>
+    <!-- This starts the React app. -->
+    <script type="module" src="/src/main.jsx"></script>
+    <!-- Closes the visible page. -->
+  </body>
+  <!-- Closes the document. -->
+</html>

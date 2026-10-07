@@ -1,0 +1,6 @@
+# Secrets stay on this computer.
+.env
+# Installed packages are downloaded again with npm install.
+node_modules
+# The production build folder.
+dist

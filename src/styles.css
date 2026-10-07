@@ -1,0 +1,1174 @@
+/* The box around every page. */
+* {
+  /* Uses the same measurement for width and padding. */
+  box-sizing: border-box;
+/* Ends the star rule. */
+}
+
+/* The page itself. */
+body {
+  /* No default gap around the edges. */
+  margin: 0;
+  /* A dark blue-gray, so the cream cards stand out. */
+  background: #1c2430;
+  /* The ink color for any text outside a card. */
+  color: #fff8ee;
+  /* The plain reading font. */
+  font-family: Outfit, sans-serif;
+  /* Stops a phone from bouncing the whole page while dragging a pedal. */
+  overscroll-behavior: none;
+  /* Fills the screen behind the notch on a tall phone. */
+  min-height: 100dvh;
+/* Ends the body rule. */
+}
+
+/* The centered column. */
+.page {
+  /* Air that also clears the home bar and the notch. */
+  padding: max(12px, env(safe-area-inset-top)) max(12px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom)) max(12px, env(safe-area-inset-left));
+  /* Wide enough for the road on a laptop, still centered. */
+  max-width: 1100px;
+  /* Centers that column. */
+  margin: 0 auto;
+  /* The column can grow with the screen. */
+  width: 100%;
+/* Ends the page rule. */
+}
+
+/* A cream card for menus and the end panel. */
+.panel {
+  /* Warm paper. */
+  background: #fff8ee;
+  /* Dark ink on that paper. */
+  color: #1c140f;
+  /* A soft corner. */
+  border-radius: 18px;
+  /* Air inside the card. clamp shrinks padding on a small phone. */
+  padding: clamp(16px, 3.5vw, 28px);
+  /* A small lift off the dark page. */
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.28);
+  /* Keeps the card inside the column. */
+  width: 100%;
+/* Ends the panel rule. */
+}
+
+/* The game name and the leaderboard title. */
+h1 {
+  /* The display font. */
+  font-family: Fraunces, serif;
+  /* clamp keeps the title big on a PC and readable on a phone. */
+  font-size: clamp(32px, 7vw, 48px);
+  /* Tight above the sentence. */
+  margin: 0 0 8px;
+/* Ends the title rule. */
+}
+
+/* Smaller headings inside a card. */
+h2 {
+  /* The same display font, smaller. */
+  font-family: Fraunces, serif;
+  /* A section size. */
+  font-size: 24px;
+  /* Space above and below. */
+  margin: 18px 0 8px;
+/* Ends the heading rule. */
+}
+
+/* The opening sentence. */
+.lead {
+  /* Shrinks a little on a narrow phone. */
+  font-size: clamp(15px, 3.6vw, 18px);
+  /* Space between lines. */
+  line-height: 1.45;
+  /* A little air under the sentence. */
+  margin: 0 0 8px;
+/* Ends the lead rule. */
+}
+
+/* The control list. */
+.controls {
+  /* Room for the bullets. */
+  margin: 0;
+  /* Space under the list. */
+  padding-left: 20px;
+  /* Each control on its own line with a gap. */
+  line-height: 1.6;
+/* Ends the list rule. */
+}
+
+/* A quiet explanation. */
+.note {
+  /* Slightly softer than the main ink. */
+  color: #5c4a3a;
+  /* Space around the sentence. */
+  margin: 12px 0;
+/* Ends the note rule. */
+}
+
+/* A problem sentence. */
+.error {
+  /* Scarlet, so a problem stands out on the cream card. */
+  color: #c81d25;
+  /* Space around the sentence. */
+  margin: 12px 0;
+/* Ends the error rule. */
+}
+
+/* The slideshow row: arrows around the three ride slots. */
+.ride-show {
+  /* Arrow, track, arrow. */
+  display: flex;
+  /* Lines the arrows with the middle of the cards. */
+  align-items: center;
+  /* A small gap beside the arrows. */
+  gap: 8px;
+  /* Space under the slideshow. */
+  margin: 8px 0 4px;
+/* Ends the ride show rule. */
+}
+
+/* Previous / next arrow. */
+.ride-arrow {
+  /* A square tap target. */
+  width: 44px;
+  /* Matching height. */
+  height: 44px;
+  /* No browser border. */
+  border: 2px solid #1c140f;
+  /* A soft corner. */
+  border-radius: 12px;
+  /* Cream face. */
+  background: #fff8ee;
+  /* Dark chevron. */
+  color: #1c140f;
+  /* Large enough to read as an arrow. */
+  font-size: 28px;
+  /* Centers the chevron. */
+  line-height: 1;
+  /* The same font as the page. */
+  font-family: inherit;
+  /* Shrinks if the row is tight. */
+  flex-shrink: 0;
+  /* The pointer shows that it can be pressed. */
+  cursor: pointer;
+/* Ends the ride arrow rule. */
+}
+
+/* The three visible rides. */
+.ride-track {
+  /* Prev, current, next in one row. */
+  display: grid;
+  /* Side peeks are narrower than the middle card. */
+  grid-template-columns: minmax(72px, 0.7fr) minmax(160px, 1.4fr) minmax(72px, 0.7fr);
+  /* A gap between the three slots. */
+  gap: 10px;
+  /* Grows between the arrows. */
+  flex: 1;
+  /* Keeps the peeks from overflowing. */
+  min-width: 0;
+  /* Lines the side peeks with the middle card. */
+  align-items: center;
+/* Ends the ride track rule. */
+}
+
+/* A faded peek of the ride before or after. */
+.ride-side {
+  /* Stack the small picture and the name. */
+  display: flex;
+  /* Vertical stack. */
+  flex-direction: column;
+  /* Center the peek art. */
+  align-items: center;
+  /* Room inside the peek. */
+  padding: 10px 6px;
+  /* A thin edge. */
+  border: 2px solid #c4a574;
+  /* A soft corner. */
+  border-radius: 14px;
+  /* Cream face. */
+  background: #fff8ee;
+  /* Dimmer than the middle ride, but still clear enough to read the colors. */
+  opacity: 0.78;
+  /* Slightly smaller so the middle reads as selected. */
+  transform: scale(0.92);
+  /* The same font as the page. */
+  font-family: inherit;
+  /* Dark letters. */
+  color: #1c140f;
+  /* The pointer shows that a tap brings it to the middle. */
+  cursor: pointer;
+  /* Smooth when it becomes the middle ride. */
+  transition: opacity 0.2s ease, transform 0.2s ease;
+/* Ends the ride side rule. */
+}
+
+/* The cutout on a side peek. */
+.ride-side-art {
+  /* Fills the peek width. */
+  width: 100%;
+  /* Shorter than the middle art. */
+  height: 56px;
+  /* Keeps the whole vehicle visible. */
+  object-fit: contain;
+  /* Air under the picture. */
+  margin-bottom: 6px;
+  /* Same edge clarity as the middle art. */
+  filter: contrast(1.05);
+/* Ends the ride side art rule. */
+}
+
+/* The name under a side peek. */
+.ride-side-name {
+  /* Small label. */
+  font-size: 12px;
+  /* Bold enough to read. */
+  font-weight: 700;
+  /* Centered. */
+  text-align: center;
+  /* One line when possible. */
+  line-height: 1.2;
+/* Ends the ride side name rule. */
+}
+
+/* The selected ride in the middle. */
+.ride-card {
+  /* Stack the picture above the words. */
+  display: flex;
+  /* Vertical stack. */
+  flex-direction: column;
+  /* Center the picture. */
+  align-items: center;
+  /* Room inside the card. */
+  padding: 14px 12px 16px;
+  /* A soft corner. */
+  border-radius: 16px;
+  /* The same font as the page. */
+  font-family: inherit;
+  /* Dark letters on cream. */
+  color: #1c140f;
+/* Ends the ride card rule. */
+}
+
+/* The middle ride is the clear pick. */
+.ride-card.selected {
+  /* A yellow edge, like the Start button. */
+  border: 3px solid #f0b400;
+  /* A soft yellow wash so the pick is obvious. */
+  background: #fff1c9;
+  /* Full size in the middle. */
+  transform: scale(1);
+  /* Fully opaque. */
+  opacity: 1;
+/* Ends the selected ride rule. */
+}
+
+/* The cutout inside the middle card. */
+.ride-art {
+  /* Fills most of the card width. */
+  width: 100%;
+  /* Tall enough to read the middle ride. */
+  height: 96px;
+  /* Keeps the whole vehicle visible. */
+  object-fit: contain;
+  /* A little air under the picture. */
+  margin-bottom: 8px;
+  /* Slight contrast so the cutout edges stay crisp on cream. */
+  filter: contrast(1.05);
+/* Ends the ride art rule. */
+}
+
+/* The name under the picture. */
+.ride-name {
+  /* The title face. */
+  font-family: Fraunces, serif;
+  /* Large enough to read as a choice. */
+  font-size: 22px;
+  /* Bold so it leads the card. */
+  font-weight: 700;
+/* Ends the ride name rule. */
+}
+
+/* The short line under the name. */
+.ride-blurb {
+  /* A quieter line. */
+  font-size: 14px;
+  /* Soft brown on cream. */
+  color: #6a4328;
+  /* Centered under the name. */
+  text-align: center;
+  /* Space above the line. */
+  margin-top: 4px;
+  /* The line can wrap on a phone. */
+  line-height: 1.3;
+/* Ends the ride blurb rule. */
+}
+
+/* Which slide this is. */
+.ride-count {
+  /* Centered under the slideshow. */
+  text-align: center;
+  /* Soft brown on cream. */
+  color: #6a4328;
+  /* Small. */
+  font-size: 13px;
+  /* Tight under the track. */
+  margin: 0 0 12px;
+/* Ends the ride count rule. */
+}
+
+/* The four rating rows under the blurb. */
+.ride-stats {
+  /* Full card width under the text. */
+  width: 100%;
+  /* Stack the bars. */
+  display: grid;
+  /* A tight gap between rows. */
+  gap: 4px;
+  /* Space above the bars. */
+  margin-top: 8px;
+/* Ends the ride stats rule. */
+}
+
+/* One rating row. */
+.ride-stat {
+  /* Label on the left, dots on the right. */
+  display: flex;
+  /* Space between the word and the dots. */
+  justify-content: space-between;
+  /* Lines them up. */
+  align-items: center;
+  /* A small gap. */
+  gap: 6px;
+/* Ends the ride stat rule. */
+}
+
+/* The word for one rating. */
+.ride-stat-label {
+  /* Small enough to fit four rows. */
+  font-size: 11px;
+  /* Bold so it reads as a label. */
+  font-weight: 700;
+  /* Dark ink. */
+  color: #1c140f;
+/* Ends the ride stat label rule. */
+}
+
+/* The five dots. */
+.ride-stat-dots {
+  /* Dots in a row. */
+  display: flex;
+  /* A hairline gap. */
+  gap: 3px;
+/* Ends the ride stat dots rule. */
+}
+
+/* One empty rating slot. */
+.ride-dot {
+  /* A small circle. */
+  width: 8px;
+  /* Matching height. */
+  height: 8px;
+  /* Round. */
+  border-radius: 50%;
+  /* A dim empty slot. */
+  background: #dcc9a8;
+/* Ends the ride dot rule. */
+}
+
+/* A filled rating slot. */
+.ride-dot.on {
+  /* Yellow, like the Start button. */
+  background: #f0b400;
+/* Ends the filled ride dot rule. */
+}
+
+/* A row of buttons that wraps on a narrow screen. */
+.actions {
+  /* Buttons sit in a row. */
+  display: flex;
+  /* They wrap instead of overflowing. */
+  flex-wrap: wrap;
+  /* A gap between buttons. */
+  gap: 10px;
+  /* A little air above the row. */
+  margin-top: 12px;
+/* Ends the actions rule. */
+}
+
+/* The main yellow button. */
+.button {
+  /* Yellow, close to the tricycle. */
+  background: #f0b400;
+  /* Dark text stays readable on yellow. */
+  color: #1c140f;
+  /* No browser outline around the text. */
+  border: 0;
+  /* A pill shape. */
+  border-radius: 999px;
+  /* A large tap target. */
+  min-height: 48px;
+  /* Air inside the pill. */
+  padding: 0 18px;
+  /* Bold label. */
+  font-weight: 700;
+  /* The same font as the page. */
+  font-family: inherit;
+  /* The size of the label. */
+  font-size: 16px;
+  /* The pointer shows that it can be pressed. */
+  cursor: pointer;
+/* Ends the button rule. */
+}
+
+/* A quieter button for secondary actions. */
+.button.ghost {
+  /* Paper inside the card, dark edge. */
+  background: transparent;
+  /* A visible edge on a cream card. */
+  border: 2px solid #1c140f;
+/* Ends the ghost rule. */
+}
+
+/* Pause and sound sit on the dark page, so they need a light edge. */
+.hud .button.ghost {
+  /* Cream letters on the dark page. */
+  color: #fff8ee;
+  /* A cream edge that stays visible. */
+  border-color: #fff8ee;
+/* Ends the hud ghost rule. */
+}
+
+/* A button that should not be pressed again. */
+.button:disabled {
+  /* Shows that the click will do nothing. */
+  cursor: default;
+  /* Fades the label. */
+  opacity: 0.6;
+/* Ends the disabled rule. */
+}
+
+/* The score and buttons above the road. */
+.hud {
+  /* Three slots: score+place, fuel, and the buttons. */
+  display: grid;
+  /* Meta grows, fuel stays tight, actions stay on the right. */
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  /* Lines them up. */
+  align-items: center;
+  /* A gap between the slots. */
+  gap: 8px 12px;
+  /* A little air under the bar. */
+  margin-bottom: 4px;
+/* Ends the hud rule. */
+}
+
+/* Score and place name stay together. */
+.hud-meta {
+  /* Score above the place on a narrow phone. */
+  display: flex;
+  /* Wrap if the place name is long. */
+  flex-wrap: wrap;
+  /* Lines them up. */
+  align-items: baseline;
+  /* A small gap between Score and CMS. */
+  gap: 6px 12px;
+  /* Long area names should not shove the fuel off screen. */
+  min-width: 0;
+/* Ends the hud meta rule. */
+}
+
+/* Pause and mute on the right. */
+.hud-actions {
+  /* No extra top margin inside the hud. */
+  margin-top: 0;
+  /* Keep the pair on one line. */
+  flex-wrap: nowrap;
+/* Ends the hud actions rule. */
+}
+
+/* The big score number. */
+.score {
+  /* The display font. */
+  font-family: Fraunces, serif;
+  /* Shrinks on a phone, stays large on a PC. */
+  font-size: clamp(22px, 4.5vw, 34px);
+  /* No extra gap. */
+  margin: 0;
+/* Ends the score rule. */
+}
+
+/* The Lagos name above the hills. */
+.area {
+  /* Cream, so it shows on the dark page. */
+  color: #fff8ee;
+  /* The title face, so the place name stands out. */
+  font-family: Fraunces, serif;
+  /* A little smaller than the score. */
+  font-size: clamp(16px, 3.2vw, 22px);
+  /* Sits on the same line as the score. */
+  margin: 0;
+/* Ends the area rule. */
+}
+
+/* The word and the jerry can, kept on one line. */
+.fuel {
+  /* The label sits beside the can. */
+  display: flex;
+  /* Lines them up. */
+  align-items: center;
+  /* A small gap. */
+  gap: 8px;
+/* Ends the fuel row. */
+}
+
+/* The word next to the can. */
+.fuel-name {
+  /* Cream, so it shows on the dark page. */
+  color: #f3d5a0;
+  /* Small, beside the score. */
+  font-size: 14px;
+  /* Bold so it reads as a label. */
+  font-weight: 700;
+/* Ends the fuel name rule. */
+}
+
+/* The yellow can beside the score. */
+.jerry {
+  /* 28 wide and 40 tall, small enough to sit in the score row. */
+  width: 28px;
+  /* Tall enough to read the petrol level. */
+  height: 40px;
+  /* The cap and handle are placed against this box. */
+  position: relative;
+/* Ends the jerry can rule. */
+}
+
+/* The metal body. */
+.jerry-body {
+  /* Sits under the cap. 6 is the cap height plus a gap. */
+  position: absolute;
+  /* Inset so the handle has room on the right. */
+  left: 0;
+  /* 6 leaves room for the handle. */
+  right: 6px;
+  /* The bottom of the can. */
+  bottom: 0;
+  /* 30 is the body under the cap. */
+  height: 30px;
+  /* Yellow metal, like a roadside jerry can. */
+  background: #f0b400;
+  /* A dark rim. */
+  border: 2px solid #1c140f;
+  /* A slight shoulder, not a circle. */
+  border-radius: 3px 3px 4px 4px;
+  /* Clips the petrol to the can. */
+  overflow: hidden;
+/* Ends the jerry body rule. */
+}
+
+/* The petrol, filled from the bottom. */
+.jerry-liquid {
+  /* Stretches across the inside of the can. */
+  position: absolute;
+  /* The left wall. */
+  left: 0;
+  /* The right wall. */
+  right: 0;
+  /* The fuel sits at the bottom. */
+  bottom: 0;
+  /* Amber petrol, lighter at the top of the liquid. */
+  background: linear-gradient(#f6d36b, #c47b00);
+/* Ends the petrol rule. */
+}
+
+/* The same petrol once the can is nearly empty. */
+.jerry-liquid.low {
+  /* Red, so an empty tank is obvious. */
+  background: linear-gradient(#e0703a, #c81d25);
+/* Ends the low petrol rule. */
+}
+
+/* The cap on the neck. */
+.jerry-cap {
+  /* Placed on the shoulder. */
+  position: absolute;
+  /* 2 is just under the top of the box. */
+  top: 2px;
+  /* Centered over the body, left of the handle. */
+  left: 6px;
+  /* A short neck. */
+  width: 8px;
+  /* The cap height. */
+  height: 6px;
+  /* A red cap, like a fuel can. */
+  background: #c81d25;
+  /* A flat cap. */
+  border-radius: 2px 2px 0 0;
+/* Ends the cap rule. */
+}
+
+/* The handle on the right shoulder. */
+.jerry-handle {
+  /* Placed beside the body. */
+  position: absolute;
+  /* Level with the shoulder. */
+  top: 10px;
+  /* The right edge of the can. */
+  right: 0;
+  /* A thin loop. */
+  width: 8px;
+  /* Tall enough to read as a handle. */
+  height: 12px;
+  /* The loop is a border, not a filled block. */
+  border: 2px solid #f0b400;
+  /* Open on the side that meets the body. */
+  border-left: 0;
+  /* The outer corner of the handle. */
+  border-radius: 0 6px 6px 0;
+/* Ends the handle rule. */
+}
+
+/* The one-line control reminder. */
+.hint {
+  /* Soft cream on the dark page. */
+  color: #f3d5a0;
+  /* A small line. */
+  font-size: clamp(13px, 2.8vw, 15px);
+  /* Tight around the line. */
+  margin: 2px 0 8px;
+/* Ends the hint rule. */
+}
+
+/* The box that gives the canvas its width. */
+.stage {
+  /* The road is as wide as the column. */
+  width: 100%;
+  /* Pedals are placed against this box. */
+  position: relative;
+  /* A dark edge if the first frame is late. */
+  background: #2c3138;
+  /* Matches the card corners. */
+  border-radius: clamp(12px, 2vw, 18px);
+  /* Clips the canvas to those corners. Keeps pedals visible via overflow visible on clusters. */
+  overflow: hidden;
+  /* A phone tap should hit the canvas, not scroll the page. */
+  touch-action: none;
+  /* A soft lift on a laptop so the road reads as the main stage. */
+  box-shadow: 0 16px 40px rgba(0, 0, 0, 0.35);
+/* Ends the stage rule. */
+}
+
+/* One thumb cluster, Left/Brake or Right/Gas. */
+.pedals {
+  /* Stack the two pedals for that thumb. */
+  display: flex;
+  /* Vertical stack. */
+  flex-direction: column;
+  /* A gap a thumb can miss. */
+  gap: 8px;
+  /* Sits on top of the road picture. */
+  position: absolute;
+  /* Above the canvas, under the You lost sheet. */
+  z-index: 1;
+  /* 12 from the bottom, or clear of the home bar. */
+  bottom: max(10px, env(safe-area-inset-bottom));
+  /* Wide enough for a thumb, narrow enough that the ride stays visible in the middle. */
+  width: min(30%, 132px);
+/* Ends the pedals rule. */
+}
+
+/* Left thumb cluster. */
+.pedals-left {
+  /* Against the left edge of the road. */
+  left: max(8px, env(safe-area-inset-left));
+/* Ends the left cluster rule. */
+}
+
+/* Right thumb cluster. */
+.pedals-right {
+  /* Against the right edge of the road. */
+  right: max(8px, env(safe-area-inset-right));
+/* Ends the right cluster rule. */
+}
+
+/* One large pedal. */
+.pedal {
+  /* Fills the cluster width. */
+  width: 100%;
+  /* Tall enough for a thumb. */
+  min-height: clamp(48px, 12vw, 68px);
+  /* No browser border. */
+  border: 0;
+  /* A soft corner, not a tiny pill. */
+  border-radius: 16px;
+  /* Bold label. */
+  font-weight: 700;
+  /* The same font as the page. */
+  font-family: inherit;
+  /* Large enough to read while driving. */
+  font-size: clamp(15px, 3.4vw, 18px);
+  /* A phone drag should not scroll. */
+  touch-action: none;
+  /* The label should not be selected by a long press. */
+  user-select: none;
+  /* The pointer shows that it can be pressed. */
+  cursor: pointer;
+  /* A little see-through so the road stays visible under the thumbs. */
+  opacity: 0.92;
+  /* A soft edge so the pedal reads on both light and dark hills. */
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
+/* Ends the pedal rule. */
+}
+
+/* The back-along-the-road pedal. */
+.pedal.left {
+  /* Dark, so it matches the brake beside it. */
+  background: #1c140f;
+  /* Cream letters. */
+  color: #fff8ee;
+/* Ends the left rule. */
+}
+
+/* The forward pedal. */
+.pedal.right {
+  /* Yellow, like the gas beside it. */
+  background: #f0b400;
+  /* Dark letters. */
+  color: #1c140f;
+/* Ends the right rule. */
+}
+
+/* The left pedal. */
+.pedal.brake {
+  /* Dark, so it is distinct from the gas. */
+  background: #1c140f;
+  /* Cream letters. */
+  color: #fff8ee;
+/* Ends the brake rule. */
+}
+
+/* The right pedal. */
+.pedal.gas {
+  /* Yellow, like the korope. */
+  background: #f0b400;
+  /* Dark letters. */
+  color: #1c140f;
+/* Ends the gas rule. */
+}
+
+/* The picture. */
+canvas {
+  /* Fills the stage width. The script sets the height. */
+  width: 100%;
+  /* Removes the thin gap under a canvas. */
+  display: block;
+/* Ends the canvas rule. */
+}
+
+/* The stack of the score, the road, and the end card. */
+.play {
+  /* The end card is placed against this box. */
+  position: relative;
+/* Ends the play rule. */
+}
+
+/* The dark sheet that holds the You lost card in the middle of the road. */
+.lost-backdrop {
+  /* Covers the score, the road, and the pedals. */
+  position: absolute;
+  /* Stretches to every edge of the play box. */
+  inset: 0;
+  /* Sits above the canvas. */
+  z-index: 2;
+  /* Centers the card. */
+  display: flex;
+  /* Horizontal center. */
+  justify-content: center;
+  /* Vertical center. */
+  align-items: center;
+  /* A dim sheet so the card reads as a popup. */
+  background: rgba(28, 20, 15, 0.55);
+  /* Room so the card does not touch the screen edge. */
+  padding: 16px;
+  /* The sheet itself fades in. 0.25s is a short fade. */
+  animation: lostFade 0.25s ease-out;
+/* Ends the lost backdrop. */
+}
+
+/* The card that pops up. */
+.lost-pop {
+  /* Stays within the phone width. */
+  width: min(100%, 440px);
+  /* The pop grows the card. 0.5s is one bounce. */
+  animation: lostPop 0.5s cubic-bezier(0.2, 1.35, 0.4, 1) both;
+/* Ends the lost pop. */
+}
+
+/* You lost, large and centered. */
+.lost-title {
+  /* Centered on the card. */
+  text-align: center;
+  /* Bigger than a normal heading. */
+  font-size: 48px;
+  /* Tight to the reason line. */
+  margin: 0 0 4px;
+  /* Slams in from a bigger size. 0.6s is one hit. */
+  animation: titleSlam 0.6s cubic-bezier(0.15, 1.4, 0.35, 1) both;
+/* Ends the lost title. */
+}
+
+/* The short reason under You lost. */
+.lost-reason {
+  /* Centered. */
+  text-align: center;
+/* Ends the lost reason. */
+}
+
+/* The points, counting up in the middle of the card. */
+.lost-points {
+  /* The same face as the title. */
+  font-family: Fraunces, serif;
+  /* Large enough to be the focus of the popup. */
+  font-size: 56px;
+  /* Centered. */
+  text-align: center;
+  /* Yellow, close to the korope. */
+  color: #c47b00;
+  /* Space around the number. */
+  margin: 4px 0 12px;
+  /* Pops after the title. 0.4s waits for You lost to land. */
+  animation: pointsPop 0.55s cubic-bezier(0.2, 1.5, 0.35, 1) 0.4s both;
+/* Ends the lost points. */
+}
+
+/* The word under the number. */
+.lost-points span {
+  /* Sits under the digits. */
+  display: block;
+  /* Smaller than the number. */
+  font-family: Outfit, sans-serif;
+  /* 16px keeps the word quiet next to the score. */
+  font-size: 16px;
+  /* Dark ink, not the gold of the number. */
+  color: #1c140f;
+  /* A little air above the word. */
+  margin-top: 2px;
+/* Ends the points word. */
+}
+
+/* Fades the dark sheet in. */
+@keyframes lostFade {
+  /* Starts clear. */
+  from {
+    /* Invisible. */
+    opacity: 0;
+  }
+  /* Ends solid. */
+  to {
+    /* Fully there. */
+    opacity: 1;
+  }
+/* Ends the fade. */
+}
+
+/* Grows the card from a speck to full size, with a small overshoot. */
+@keyframes lostPop {
+  /* Starts tiny and low. */
+  from {
+    /* Invisible. */
+    opacity: 0;
+    /* 0.35 is a small card, 24px drops it a little. */
+    transform: scale(0.35) translateY(24px);
+  }
+  /* Ends at the normal size. */
+  to {
+    /* Fully there. */
+    opacity: 1;
+    /* No shift. */
+    transform: scale(1) translateY(0);
+  }
+/* Ends the pop. */
+}
+
+/* You lost drops in oversized, then settles. */
+@keyframes titleSlam {
+  /* Starts huge and tilted. */
+  from {
+    /* Invisible. */
+    opacity: 0;
+    /* 1.8 is oversized. -8 degrees is a slight tilt. */
+    transform: scale(1.8) rotate(-8deg);
+  }
+  /* Ends straight and normal. */
+  to {
+    /* Fully there. */
+    opacity: 1;
+    /* No tilt. */
+    transform: scale(1) rotate(0deg);
+  }
+/* Ends the slam. */
+}
+
+/* The score bursts out of nothing. */
+@keyframes pointsPop {
+  /* Starts as a dot. */
+  from {
+    /* Invisible. */
+    opacity: 0;
+    /* 0.2 is a speck. */
+    transform: scale(0.2);
+  }
+  /* Ends at the normal size. */
+  to {
+    /* Fully there. */
+    opacity: 1;
+    /* Full size. */
+    transform: scale(1);
+  }
+/* Ends the points pop. */
+}
+
+/* The end card sits on the road so the crash stays visible. */
+.overlay {
+  /* Pulls the card up over the road. */
+  margin-top: -28px;
+  /* Keeps it above the canvas. */
+  position: relative;
+/* Ends the overlay rule. */
+}
+
+/* The name field. */
+.field {
+  /* The label sits above the box. */
+  display: grid;
+  /* A small gap. */
+  gap: 6px;
+  /* Bold label. */
+  font-weight: 700;
+/* Ends the field rule. */
+}
+
+/* The name box. */
+input {
+  /* Tall enough to tap. */
+  min-height: 48px;
+  /* Air inside the box. */
+  padding: 0 12px;
+  /* A visible edge. */
+  border: 2px solid #1c140f;
+  /* A slight corner. */
+  border-radius: 12px;
+  /* The same font as the page. */
+  font: inherit;
+  /* Dark ink. */
+  color: #1c140f;
+  /* Paper fill. */
+  background: #fffdf8;
+/* Ends the input rule. */
+}
+
+/* The score table. */
+table {
+  /* Uses the full card width. */
+  width: 100%;
+  /* Collapses the double borders. */
+  border-collapse: collapse;
+/* Ends the table rule. */
+}
+
+/* Every cell. */
+th,
+/* Score cells use the same alignment and line as the headings. */
+td {
+  /* Left align so names line up. */
+  text-align: left;
+  /* Air inside each cell. */
+  padding: 8px 6px;
+  /* A line under each row. */
+  border-bottom: 1px solid #eadfce;
+/* Ends the cell rule. */
+}
+
+/* The header row. */
+th {
+  /* A little stronger than the scores. */
+  font-size: 14px;
+/* Ends the header rule. */
+}
+
+/* Narrow phones: pack the score bar and keep the road tall. */
+@media (max-width: 560px) {
+  /* The hud stacks fuel under the score when width is tight. */
+  .hud {
+    /* Score on the left, buttons on the right, fuel on its own row. */
+    grid-template-columns: 1fr auto;
+  /* Ends the phone hud. */
+  }
+
+  /* Fuel sits under the score so the buttons keep the corner. */
+  .fuel {
+    /* Full width under the meta row. */
+    grid-column: 1 / 2;
+    /* Second row. */
+    grid-row: 2;
+  /* Ends the phone fuel. */
+  }
+
+  /* Pause and mute stay top-right. */
+  .hud-actions {
+    /* Top row, right cell. */
+    grid-row: 1;
+    /* Right column. */
+    grid-column: 2;
+  /* Ends the phone actions. */
+  }
+
+  /* Smaller ghost buttons so they fit beside the score. */
+  .hud .button {
+    /* A shorter pill. */
+    min-height: 40px;
+    /* Less horizontal padding. */
+    padding: 0 12px;
+    /* A smaller label. */
+    font-size: 14px;
+  /* Ends the phone hud button. */
+  }
+
+  /* The long hint steals height on a short phone. */
+  .hint {
+    /* Hide it. The pedals already name themselves. */
+    display: none;
+  /* Ends the phone hint. */
+  }
+
+  /* Middle ride art shrinks a little on a narrow phone. */
+  .ride-art {
+    /* 80 keeps the middle card readable. */
+    height: 80px;
+  /* Ends the phone ride art. */
+  }
+
+  /* Side peeks stay thin on a phone. */
+  .ride-side-art {
+    /* 44 is enough to recognize the neighbor. */
+    height: 44px;
+  /* Ends the phone side art. */
+  }
+
+  /* Smaller arrows on a phone. */
+  .ride-arrow {
+    /* 38 still taps cleanly. */
+    width: 38px;
+    /* Matching height. */
+    height: 38px;
+    /* Slightly smaller chevron. */
+    font-size: 24px;
+  /* Ends the phone arrow. */
+  }
+
+  /* The You lost title must fit a narrow card. */
+  .lost-title {
+    /* Smaller than the desktop slam. */
+    font-size: 36px;
+  /* Ends the phone lost title. */
+  }
+
+  /* The points number too. */
+  .lost-points {
+    /* Still large, but not overflowing. */
+    font-size: 44px;
+  /* Ends the phone lost points. */
+  }
+
+  /* Control list text can wrap more tightly. */
+  .controls {
+    /* A comfortable phone size. */
+    font-size: 14px;
+  /* Ends the phone controls. */
+  }
+/* Ends the narrow phone block. */
+}
+
+/* Short landscape phones: keep pedals and the road in one view. */
+@media (max-height: 480px) {
+  /* Drop the hint. */
+  .hint {
+    /* No height. */
+    display: none;
+  /* Ends the short hint. */
+  }
+
+  /* A shorter score bar. */
+  .score {
+    /* Compact. */
+    font-size: 20px;
+  /* Ends the short score. */
+  }
+
+  /* Compact place name. */
+  .area {
+    /* Compact. */
+    font-size: 15px;
+  /* Ends the short area. */
+  }
+
+  /* Smaller pedals so they do not cover half the road. */
+  .pedal {
+    /* A shorter thumb target. */
+    min-height: 42px;
+    /* Smaller label. */
+    font-size: 13px;
+  /* Ends the short pedal. */
+  }
+
+  /* Narrower clusters on a landscape phone. */
+  .pedals {
+    /* 28% of the road width. */
+    width: min(28%, 120px);
+    /* Closer to the bottom edge. */
+    bottom: 6px;
+  /* Ends the short pedals. */
+  }
+
+  /* Less page padding so the road can grow. */
+  .page {
+    /* Tight edges. */
+    padding: 6px 8px 8px;
+  /* Ends the short page. */
+  }
+/* Ends the short landscape block. */
+}
+
+/* Laptops and desktops: a roomier stage and clearer pedals. */
+@media (min-width: 900px) {
+  /* More air around the column. */
+  .page {
+    /* Comfortable desktop padding. */
+    padding: 28px 24px 40px;
+  /* Ends the desktop page. */
+  }
+
+  /* Wider pedal clusters that are easy to click. */
+  .pedals {
+    /* 160 is a comfortable click target width. */
+    width: 160px;
+    /* A little higher off the bottom edge. */
+    bottom: 16px;
+  /* Ends the desktop pedals. */
+  }
+
+  /* Taller pedals on a mouse-friendly screen. */
+  .pedal {
+    /* 64 matches the original thumb height. */
+    min-height: 64px;
+  /* Ends the desktop pedal. */
+  }
+
+  /* Ride art can be taller on a wide start card. */
+  .ride-art {
+    /* 110 shows more of each vehicle. */
+    height: 110px;
+  /* Ends the desktop ride art. */
+  }
+/* Ends the desktop block. */
+}

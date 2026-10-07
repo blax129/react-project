@@ -1,0 +1,12 @@
+# Netlify reads this file when it builds Moruwa Dash.
+# command builds the React app. publish is the folder visitors download.
+[build]
+  # Vite writes the finished site into dist.
+  command = "npm run build"
+  # That folder is what Netlify publishes.
+  publish = "dist"
+
+# Node 20 is the version Netlify should use.
+[build.environment]
+  # Vite 5 runs on this Node version.
+  NODE_VERSION = "20"
