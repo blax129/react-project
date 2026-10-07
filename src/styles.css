@@ -1263,3 +1263,17 @@ th {
   .screen-hint { flex-basis: 100%; }
 }
 @media (prefers-reduced-motion:reduce) { .fuel-fill { transition: none; animation: none !important; } }
+
+.share-dialog { width: min(420px, calc(100vw - 24px)); max-height: calc(100dvh - 24px); overflow-y: auto; box-sizing: border-box; border: 1px solid #b8ac94; border-radius: 20px; padding: 24px; background: #fff8eb; color: #211c16; text-align: center; }
+.share-dialog::backdrop { background: #080e19bb; }
+.share-dialog h2 { margin: 12px 0 8px; }
+.share-dialog p { font-size: 15px; line-height: 1.4; }
+.share-close { position: absolute; top: 6px; right: 8px; width: 44px; height: 44px; border: 0; border-radius: 50%; background: transparent; font-size: 28px; cursor: pointer; }
+.share-qr { display: block; width: min(260px, 100%); height: auto; margin: 16px auto; image-rendering: pixelated; }
+.share-qr-placeholder { min-height: 260px; display: grid; place-content: center; }
+.share-link-label { display: block; text-align: left; font-size: 13px; margin-bottom: 5px; }
+.share-link { width: 100%; box-sizing: border-box; padding: 12px 8px; border: 1px solid #b8ac94; border-radius: 8px; background: white; font-size: 14px; color: #211c16; }
+.share-actions { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.share-actions .button { font-size: 14px; padding-inline: 14px; text-decoration: none; }
+.share-status { min-height: 21px; margin: 10px 0 0; }
+.share-actions a.button { display: inline-flex; align-items: center; justify-content: center; }

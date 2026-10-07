@@ -1,9 +1,7 @@
 // The numbers that shape the hills, the fuel, and the shared crash rules.
 import {
   CAN_FUEL,
-  CAN_GAP,
   CAN_REACH,
-  FIRST_CAN,
   TUMBLE,
   FUEL_MAX,
   GRAVITY,
@@ -47,7 +45,7 @@ export function createRun(vehicleId, terrain = { heightAt: groundY, slopeAt: gro
     // Fuel cans still ahead.
     cans: [],
     // How far the can spawner has prepared.
-    nextCan: FIRST_CAN,
+    nextCan: firstFuelStop(vehicle),
     // Seconds spent almost still with an empty tank.
     still: 0,
     // True after a flip or an empty tank.
@@ -104,14 +102,32 @@ export function reseat(run) {
   }
 }
 
+// Budget stops by each vehicle's cruising range, rather than its current tank.
+// Stops stay fixed once planned: no moving pickups or reversing exploits.
+export function fuelStopGap(vehicle, x = 0) {
+  return Math.max(650, Math.min(2100, vehicle.maxSpeed * .48 / vehicle.fuelBurn * 30)) * (1 + hardship(x) * .12);
+}
+function firstFuelStop(vehicle) { return 40 + fuelStopGap(vehicle) * 1.15; }
+export function placeFuelStop(terrain, target) {
+  let best = target, cost = Infinity;
+  for (let x = target - 180; x <= target + 180; x += 20) {
+    const slope = Math.abs(terrain.slopeAt(x));
+    const approach = Math.abs(terrain.slopeAt(x - 70));
+    const climbAhead = Math.max(0, terrain.heightAt(x) - terrain.heightAt(x + 240));
+    const candidate = slope * 500 + approach * 120 + Math.abs(x - target) * .15 - Math.min(climbAhead, 80);
+    if (candidate < cost) { cost = candidate; best = x; }
+  }
+  return best;
+}
+
 // Adds cans ahead of the rider.
 function ensureCans(run) {
   // Keep a can ready past the right edge of the view.
   while (run.nextCan < run.x + 1400) {
     // One can on this stretch of road.
-    run.cans.push({ x: run.nextCan, taken: false });
-    // Later areas leave a longer gap, so coasting matters more. 480 is the extra gap by Epe.
-    run.nextCan += CAN_GAP + hardship(run.nextCan) * 480 + (run.cans.length % 3) * 80;
+    run.cans.push({ x: placeFuelStop(run.terrain, run.nextCan), taken: false });
+    // Modestly longer late-game gaps reward coasting without starving heavy rides.
+    run.nextCan += fuelStopGap(getVehicle(run.vehicleId), run.nextCan);
   }
   // Drops cans the rider has left behind.
   run.cans = run.cans.filter((can) => can.x > run.x - 400);
@@ -155,7 +171,11 @@ export function stepRun(run, dt, controls) {
   const drive = !stopping && run.fuel > 0 ? requested : 0;
   const gas = forwardHeld && !backHeld;
   const brake = backHeld && !forwardHeld;
-  if (grounded && drive) run.fuel = Math.max(0,run.fuel-vehicle.fuelBurn*step);
+  if (grounded && drive) {
+    const uphillLoad = Math.max(0, -Math.sin(hill) * drive);
+    const cruiseLoad = Math.min(1, Math.abs(tangentSpeed) / vehicle.maxSpeed);
+    run.fuel = Math.max(0,run.fuel-vehicle.fuelBurn*(.65 + cruiseLoad*.25 + uphillLoad*.5)*step);
+  }
 
   // In the air the pedals spin the ride. On the road they lean it and also drive.
   if (!grounded) {
@@ -190,11 +210,15 @@ export function stepRun(run, dt, controls) {
   run.vy += GRAVITY * step;
   if (grounded && stopping) {
     // Remove only along-road velocity, never push through zero into reverse.
-    const change = -Math.sign(tangentSpeed)*Math.min(Math.abs(tangentSpeed),vehicle.brake*step);
+    // Include gravity from this frame. Previously it reintroduced rollback every
+    // tick, leaving Gas stuck in the direction-change braking branch uphill.
+    const currentSpeed = run.vx*Math.cos(hill)+run.vy*Math.sin(hill);
+    const change = -Math.sign(currentSpeed)*Math.min(Math.abs(currentSpeed),(vehicle.brake + Math.abs(GRAVITY*Math.sin(hill)))*step);
     run.vx += Math.cos(hill)*change;
     run.vy += Math.sin(hill)*change;
   } else if (grounded && drive) {
-    const push = vehicle.accel * (drive < 0 ? 0.65 : 1) * drive * step;
+    const lowGear = drive > 0 ? 1 + .45 * Math.max(0, 1 - Math.abs(tangentSpeed)/100) : 1;
+    const push = vehicle.accel * lowGear * (drive < 0 ? 0.65 : 1) * drive * step;
     run.vx += Math.cos(hill)*push;
     run.vy += Math.sin(hill)*push;
   }
@@ -304,9 +328,9 @@ export function stepRun(run, dt, controls) {
     // Horizontal gap.
     const dx = can.x - run.x;
     // The can floats a little above the road.
-    const dy = roadY(can.x) - 36 - run.y;
+    const dy = roadY(can.x) - 42 - run.y;
     // Close enough to collect.
-    if (dx * dx + dy * dy < CAN_REACH * CAN_REACH) {
+    if (run.fuel <= FUEL_MAX - CAN_FUEL && dx * dx + dy * dy < CAN_REACH * CAN_REACH) {
       // The can is used up.
       can.taken = true;
       // Fills the tank, but not past full.

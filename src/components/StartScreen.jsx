@@ -2,6 +2,7 @@
 import { useEffect, useState } from "react";
 // The sound switch.
 import MuteButton from "./MuteButton";
+import ShareButton from "./ShareButton";
 // The rides, ratings, and the browser key for the last pick.
 import { VEHICLE_KEY, VEHICLES, getVehicle, vehicleRatings } from "../game/vehicles";
 
@@ -178,7 +179,7 @@ export default function StartScreen({ muted, onToggleMute, onStart, onBoard }) {
       </ul>
       {/* Where scores go. */}
       <p className="note">
-        The score is how far you get. Landing upside down, or an empty tank, ends the run.
+        Fuel stops refill 34% when your tank is at 66% or below. Coast downhill to save fuel. The score is how far you get. Landing upside down, or an empty tank, ends the run.
       {/* Closes this sentence. */}
       </p>
       </details>
@@ -196,6 +197,7 @@ export default function StartScreen({ muted, onToggleMute, onStart, onBoard }) {
         </button>
         {/* Turns sound on or off. */}
         <MuteButton muted={muted} onToggle={onToggleMute} />
+        <ShareButton />
       {/* Closes this box. */}
       </div>
     {/* Closes this card. */}

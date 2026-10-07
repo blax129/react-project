@@ -27,9 +27,9 @@ export const FUEL_BURN = 4;
 // A full tank.
 export const FUEL_MAX = 100;
 // A fuel can puts this much back in the tank.
-export const CAN_FUEL = 42;
+export const CAN_FUEL = 34;
 // How close the korope must be to pick up a can.
-export const CAN_REACH = 42;
+export const CAN_REACH = 68;
 // The first can appears after this much road.
 export const FIRST_CAN = 520;
 // Cans are about this far apart. The gap grows a little with distance.

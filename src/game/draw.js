@@ -374,9 +374,20 @@ function drawCans(ctx, run) {
       return;
     }
     // Sits 36 units above the road, matching the pickup point in the physics.
-    const y = groundY(can.x) - 36;
-    // A yellow jerry can with petrol in the window.
-    drawJerry(ctx, can.x, y);
+    const y = groundY(can.x) - 42;
+    ctx.save();
+    ctx.translate(can.x, y);
+    // A high-contrast marker distinguishes collectible fuel from scenery.
+    ctx.fillStyle = "#102b32";
+    ctx.strokeStyle = "#b9f6dc";
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(0, 0, 29, 0, Math.PI*2); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = "#e4fff1";
+    ctx.font = "bold 15px sans-serif"; ctx.textAlign = "center";
+    ctx.fillText("FUEL", 0, -38);
+    ctx.scale(1.25,1.25);
+    drawJerry(ctx, 0, -2);
+    ctx.restore();
   });
 }
 

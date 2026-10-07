@@ -75,7 +75,10 @@ export function groundY(x) {
     const {strength,sharpness}=sectionDifficulty(index);
     obstacle=profileHeight(CHALLENGES[index%CHALLENGES.length].profile,local,sharpness)*strength;
   }
-  return 340-baseRoll-obstacle;
+  // Broad linking hills replace long recovery flats while keeping a short start.
+  const rollingFade=smooth(clamp01((x-650)/700));
+  const linkingHills=(Math.sin((x-650)/155)*(17+hard*14))*rollingFade;
+  return 340-baseRoll-obstacle-linkingHills;
 }
 
 export function groundSlope(x) {

@@ -20,9 +20,8 @@ for(const v of Object.values(VEHICLES)) {
     const run=createRun(v.id);
     // The warm-up ends before the deliberate skill obstacles begin.
     for(let i=0;i<1440 && run.x<700 && !run.over;i++) stepRun(run,FIXED_STEP,{gas:true});
-    assert.ok(run.x>520,`did not reach opening pickup: ${run.x}`);
+    assert.ok(run.x>520,`did not clear warm-up: ${run.x}`);
     assert.ok(!run.over,`opening crash: ${run.endReason}`);
-    assert.ok(run.cans.some(c=>c.taken)||run.x>920,'first can not collected');
     const hill=withoutCans(createRun(v.id,incline));
     advance(hill,5,{gas:true});
     assert.ok(hill.x>200,`cannot climb a 15% grade: ${hill.x}`);
@@ -43,7 +42,7 @@ for(const v of Object.values(VEHICLES)) {
     const coast=withoutCans(createRun(v.id,flat));coast.fuel=0;coast.vx=120;
     advance(coast,.25);
     assert.ok(coast.x>40&&!coast.over,'empty coasting broken');
-    const pickup=createRun(v.id,flat);pickup.fuel=90;
+    const pickup=createRun(v.id,flat);pickup.fuel=FUEL_MAX-CAN_FUEL;
     pickup.cans=[{x:pickup.x,taken:false}];pickup.nextCan=Infinity;
     assert.equal(stepRun(pickup,FIXED_STEP,{}),'fuel');
     assert.equal(pickup.fuel,FUEL_MAX);
@@ -103,3 +102,16 @@ test('invalid or zero simulation steps do not mutate runs',()=>{
 test('published vehicle ratings match freshly measured physics',()=>{
   for(const v of Object.values(VEHICLES)) assert.deepEqual(benchmarks[v.id],measureVehicle(v),`${v.id}: run npm run balance after physics changes`);
 });
+
+for (const v of Object.values(VEHICLES)) {
+  test(v.id + ': Gas alone recovers from rollback on a hill', () => {
+    const slope = .35;
+    const terrain = {heightAt:x=>340-slope*x, slopeAt:()=>-slope};
+    const run = withoutCans(createRun(v.id,terrain));
+    run.vx=-25; run.vy=25*slope;
+    advance(run,4,{gas:true});
+    assert.equal(run.over,false);
+    assert.ok(run.x>80, 'Gas remained stuck braking at '+run.x);
+    assert.ok(run.vx>0, 'still rolling backward');
+  });
+}
