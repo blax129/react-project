@@ -36,3 +36,34 @@ test('continuous throttle is measurably less successful than timed control',()=>
   }
   assert.ok(crashes>=6,`only ${crashes} rides punished blind throttle`);
 });
+
+test('later circuits have steeper drops and climbs, including beyond Epe', () => {
+  const peakSlope = index => {
+    let peak = 0;
+    const start = CHALLENGE_START + index * SECTION_LENGTH;
+    for (let dx = 0; dx < SECTION_LENGTH; dx += 4) peak = Math.max(peak, Math.abs(groundSlope(start + dx)));
+    return peak;
+  };
+  for (let type = 0; type < 4; type++) {
+    const early = peakSlope(type);
+    const middle = peakSlope(type + 12);
+    const late = peakSlope(type + 40);
+    assert.ok(middle > early * 1.15, `type ${type}: insufficient progression`);
+    assert.ok(late > middle * 1.05, `type ${type}: progression stopped beyond Epe`);
+  }
+});
+
+test('late-game terrain stays finite and smoothly joined at very high scores', () => {
+  for (const index of [4, 12, 40, 400, 19090]) {
+    const start = CHALLENGE_START + index * SECTION_LENGTH;
+    for (let dx = 0; dx < SECTION_LENGTH; dx += 3) {
+      assert.ok(Number.isFinite(groundY(start + dx)));
+      assert.ok(Math.abs(groundSlope(start + dx)) < 20, 'unbounded cliff');
+    }
+    assert.ok(Math.abs(groundY(start - .001) - groundY(start + .001)) < .01);
+    assert.ok(Math.abs(groundSlope(start - .001) - groundSlope(start + .001)) < .01);
+  }
+  assert.match(terrainCue(10000), /Hard/);
+  assert.match(terrainCue(21040), /Expert/);
+  assert.match(terrainCue(42040), /Extreme/);
+});

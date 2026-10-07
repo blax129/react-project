@@ -1234,3 +1234,32 @@ th {
   .stage .pedals { width: 100px; bottom: 8px; }
   .stage .pedal { min-height: 52px; font-size: 16px; }
 }
+
+/* Keep long-press selection and callouts away from the driving surface. */
+.play { -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.play input, .play textarea, .play [contenteditable] { -webkit-user-select: text; user-select: text; -webkit-touch-callout: default; }
+.page-playing { overscroll-behavior: contain; }
+.fuel.fuel-gauge { display: block; position: relative; width: 120px; padding-bottom: 12px; color: #c3d4dc; }
+.fuel-heading { display: flex; align-items: center; gap: 5px; font-size: 10px; letter-spacing: .08em; line-height: 20px; }
+.fuel-percent { margin-left: auto; font-variant-numeric: tabular-nums; letter-spacing: 0; font-size: 12px; }
+.fuel-track { height: 6px; border-radius: 4px; overflow: hidden; background: #080e16; box-shadow: inset 0 0 0 1px #344150; }
+.fuel-fill { height: 100%; border-radius: inherit; background: #a3c9ba; transition: width .25s linear, background .4s; }
+.fuel-gauge.low .fuel-fill { background: #dfa950; }
+.fuel-gauge.critical .fuel-fill { background: #e06b69; animation: fuel-warning 1.8s ease-in-out infinite; }
+.fuel-feedback { position: absolute; bottom: -2px; left: 0; font-size: 10px; color: #bdded0; }
+.fuel-gauge.critical .fuel-feedback { color: #ef9995; }
+@keyframes fuel-warning { 50% { opacity: .5; } }
+.screen-hint { grid-column: 1 / -1; color: #e1e8ec; background: #293642; padding: 10px; font-size: 13px; }
+.screen-hint button { margin-left: 8px; min-width: 36px; min-height: 36px; }
+@media (max-width:560px) and (orientation:portrait) {
+  .hud { grid-template-columns: 1fr auto; }
+  .hud .hud-meta { grid-column: 1; grid-row: 1; }
+  .hud .fuel-gauge { grid-column: 2; grid-row: 1; width: 110px; }
+  .hud .hud-actions { grid-column: 1 / -1; grid-row: 2; justify-content: space-between; }
+}
+@media (orientation:landscape) and (max-height:600px) {
+  .page-playing .hud { flex-wrap: wrap; }
+  .page-playing .fuel-gauge { width: 100px; flex-shrink: 0; }
+  .screen-hint { flex-basis: 100%; }
+}
+@media (prefers-reduced-motion:reduce) { .fuel-fill { transition: none; animation: none !important; } }

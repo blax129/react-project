@@ -224,9 +224,10 @@ export default function App() {
       {/* The run stays mounted after the first start, so a crash frame is not lost. */}
       {started ? (
         // Hidden while the leaderboard is open. The road does not reset.
-        <div className="play" hidden={screen !== "play"}>
+        <div className="play" hidden={screen !== "play"} onContextMenu={event => { if (!event.target.closest("input, textarea, [contenteditable]")) event.preventDefault(); }}>
           {/* Score, pause, and mute. The pedals sit under the picture. */}
           <Hud
+            key={runId}
             // The distance so far.
             score={score}
             // The tank percent.

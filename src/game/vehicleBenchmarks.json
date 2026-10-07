@@ -30,7 +30,7 @@
     "economy": 94.98,
     "brakingDistance": 20.48,
     "tankSeconds": 25,
-    "openingDistance": 10710,
+    "openingDistance": 10701.9,
     "openingSeconds": 30.01,
     "openingEnd": "30-second limit",
     "pickups": 9
@@ -90,7 +90,7 @@
     "economy": 78.02,
     "brakingDistance": 18.64,
     "tankSeconds": 17.86,
-    "openingDistance": 12088.8,
+    "openingDistance": 12069.2,
     "openingSeconds": 30.01,
     "openingEnd": "30-second limit",
     "pickups": 10
@@ -114,9 +114,9 @@
     "economy": 85.49,
     "brakingDistance": 18.64,
     "tankSeconds": 20.83,
-    "openingDistance": 11228.9,
-    "openingSeconds": 30.01,
-    "openingEnd": "30-second limit",
+    "openingDistance": 10948.5,
+    "openingSeconds": 28.94,
+    "openingEnd": "flip",
     "pickups": 9
   },
   "lexus": {
@@ -126,7 +126,7 @@
     "economy": 89.67,
     "brakingDistance": 18.06,
     "tankSeconds": 20,
-    "openingDistance": 12385.9,
+    "openingDistance": 12335.1,
     "openingSeconds": 30.01,
     "openingEnd": "30-second limit",
     "pickups": 10
@@ -210,10 +210,10 @@
     "economy": 79.92,
     "brakingDistance": 17.97,
     "tankSeconds": 17.24,
-    "openingDistance": 10970.8,
-    "openingSeconds": 25.42,
-    "openingEnd": "flip",
-    "pickups": 9
+    "openingDistance": 12823.6,
+    "openingSeconds": 30.01,
+    "openingEnd": "30-second limit",
+    "pickups": 11
   },
   "benzcoupe": {
     "speed": 478.74,

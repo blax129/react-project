@@ -1,4 +1,5 @@
 import { hardship } from './areas';
+import { METERS } from './constants';
 
 export const CHALLENGE_START = 1100;
 export const SECTION_LENGTH = 2200;
@@ -29,10 +30,34 @@ export const CHALLENGES = [
   },
 ];
 
-function profileHeight(points,x) {
+// The first circuit teaches the four obstacles. Later circuits keep escalating.
+// Bounded growth prevents huge cliffs or numerically unstable endless terrain.
+export function sectionDifficulty(index) {
+  const extra = Math.max(0, index - CHALLENGES.length + 1);
+  const pressure = extra / (extra + 12);
+  return {
+    strength: .95 + hardship(CHALLENGE_START + index * SECTION_LENGTH) * .7 + pressure * 1.2,
+    sharpness: pressure * .65,
+  };
+}
+
+export function difficultyLabel(x) {
+  const score = Math.max(0, Math.floor((x - 40) / METERS));
+  if (score >= 1000) return 'Extreme';
+  if (score >= 500) return 'Expert';
+  if (x >= CHALLENGE_START + CHALLENGES.length * SECTION_LENGTH) return 'Hard';
+  return '';
+}
+
+function profileHeight(points,x,sharpness=0) {
   for(let i=1;i<points.length;i++) {
     const [ax,ay]=points[i-1], [bx,by]=points[i];
-    if(x<=bx) return ay+(by-ay)*smooth(clamp01((x-ax)/(bx-ax)));
+    if(x<=bx) {
+      const t=smooth(clamp01((x-ax)/(bx-ax)));
+      // Sharper transitions retain zero slope at their ends: no seams or jumps.
+      const eased=t+(smooth(t)-t)*sharpness;
+      return ay+(by-ay)*eased;
+    }
   }
   return 0;
 }
@@ -47,8 +72,8 @@ export function groundY(x) {
     const index=Math.floor((x-CHALLENGE_START)/SECTION_LENGTH);
     const local=x-CHALLENGE_START-index*SECTION_LENGTH;
     // Difficulty increases between sections, never by shifting their positions.
-    const strength=.95+hardship(CHALLENGE_START+index*SECTION_LENGTH)*.7;
-    obstacle=profileHeight(CHALLENGES[index%CHALLENGES.length].profile,local)*strength;
+    const {strength,sharpness}=sectionDifficulty(index);
+    obstacle=profileHeight(CHALLENGES[index%CHALLENGES.length].profile,local,sharpness)*strength;
   }
   return 340-baseRoll-obstacle;
 }
@@ -63,5 +88,6 @@ export function terrainCue(x) {
   const index=Math.max(0,Math.floor((x-CHALLENGE_START+350)/SECTION_LENGTH));
   const section=CHALLENGES[index%CHALLENGES.length];
   const ahead=x<CHALLENGE_START+index*SECTION_LENGTH;
-  return `${ahead?'Ahead: ':''}${section.name} · ${section.advice}`;
+  const level=difficultyLabel(x);
+  return `${level ? level+' · ' : ''}${ahead?'Ahead: ':''}${section.name} · ${section.advice}`;
 }
