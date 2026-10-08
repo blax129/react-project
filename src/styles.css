@@ -1336,3 +1336,54 @@ th {
 @keyframes countdown-pop { from { transform: scale(1.18); opacity: .5; } to { transform: scale(1); opacity: 1; } }
 /* Respect players who prefer still interface elements. */
 @media (prefers-reduced-motion: reduce) { .rotate-phone > span, .start-countdown strong { animation: none; } }
+
+/* The private military course has its own olive and sand visual language. */
+.race-room { color: #f2e8cc; width: min(1200px,100%); margin-inline: auto; }
+/* Keep navigation compact enough for landscape phones. */
+.race-header { display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:16px; }
+/* Military-style typography distinguishes this mode without changing solo branding. */
+.race-header h1 { font-size:clamp(28px,5vw,52px);margin:4px 0; }
+/* Small labels establish race status above larger headings. */
+.race-eyebrow { font:700 12px system-ui;letter-spacing:.16em;color:#d3c998; }
+/* Olive panels group admission, readiness and results. */
+.race-panel { background:#26372d;border:1px solid #788265;border-radius:18px;padding:24px;margin-block:18px; }
+/* Both player progress bars remain visible even when the rival is off-screen. */
+.race-roster { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
+/* Each seat gets a distinct readable card. */
+.race-roster>div { min-width:0;background:#29392f;border:1px solid #5c7059;border-radius:10px;padding:12px; }
+/* Wrap unusually long names rather than widening the whole game. */
+.race-roster strong,.race-roster span { display:block;overflow-wrap:anywhere; }
+/* Secondary status text remains compact on narrow devices. */
+.race-roster span { font-size:13px;color:#d2d8bd;margin-top:4px; }
+/* Progress indicators communicate distance without requiring the ghost to be visible. */
+.race-roster progress { width:100%;height:8px;accent-color:#d7ca83;margin-top:8px; }
+/* Ready controls and sharing occupy separate columns on larger screens. */
+.race-lobby { display:grid;grid-template-columns:1fr 260px;gap:24px; }
+/* The room code is easy to read aloud or copy into a message. */
+.room-code { font:800 25px ui-monospace,monospace;letter-spacing:.15em; }
+/* Native fields stay comfortably tappable and avoid phone auto-zoom. */
+.race-room input,.race-room select { display:block;width:100%;box-sizing:border-box;padding:12px;min-height:46px;font:16px system-ui;border-radius:8px;border:1px solid #a5b295;margin:8px 0;background:#eff0dc;color:#18291d; }
+/* A high-contrast QR remains scannable from a second screen. */
+.room-invite img { display:block;margin:0 auto 12px;border-radius:8px; }
+/* Secondary buttons must be readable on the dark military panels. */
+.race-room .button.ghost { color:#f1e9ce;border-color:#abb491; }
+/* Explicit errors remain visible during automatic reconnection attempts. */
+.race-error { background:#4c3029;border:1px solid #cb9475;padding:12px;border-radius:8px; }
+/* Keep race fuel and checkpoint data in a compact wrapping row. */
+.race-stats { display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px;background:#202f28;font-size:14px; }
+/* Canvas dimensions are fitted by the renderer for the current viewport. */
+.race-stage { position:relative;text-align:center;line-height:0;overflow:hidden;border-radius:12px;background:#354939; }
+/* The synchronized countdown and respawn delay cover only the road. */
+.race-overlay { position:absolute;inset:0;display:grid;place-items:center;background:#15231f99;color:#ffe19a;font:900 clamp(28px,8vw,82px)/1.2 system-ui;pointer-events:none;text-align:center; }
+/* Both pedals stay in fixed positions while countdowns and results change. */
+.race-pedals { display:flex;justify-content:space-between;gap:30px;padding:10px 0; }
+/* Reuse the existing reliable touch action behaviour with comfortable thumb targets. */
+.race-pedals .pedal { width:32%;min-height:64px; }
+/* The multiplayer entry point is distinct from the normal solo Start button. */
+.race-entry { background:#3d654e;color:#fff8e9; }
+/* The winning result is readable and celebratory without hiding the final roster. */
+.race-result { text-align:center;padding-block:38px; }
+/* Stack sharing below readiness on portrait phones. */
+@media(max-width:650px){.race-lobby{grid-template-columns:1fr}.race-panel{padding:16px}.race-room .race-roster{gap:6px}.race-roster>div{padding:8px}.race-header{align-items:flex-start}.race-header .button{padding:10px;font-size:13px}}
+/* Minimize dashboard height when the phone is turned sideways. */
+@media(orientation:landscape) and (max-height:600px){.race-header{margin:0 0 5px}.race-header h1{font-size:24px}.race-roster>div{padding:5px 10px}.race-roster span{font-size:11px}.race-stats{padding:5px;font-size:12px}.race-pedals .pedal{min-height:48px}.race-pedals{padding:6px 0}}

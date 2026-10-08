@@ -482,7 +482,7 @@ function drawSigns(ctx, run) {
 }
 
 // Draws the ride picture around its center, then rotates it onto the hill.
-function drawVehicle(ctx, run, vehicleId) {
+export function drawVehicle(ctx, run, vehicleId) {
   // The size and wheel anchors for this ride.
   const vehicle = getVehicle(vehicleId);
   // The loaded cutout.

@@ -1,3 +1,7 @@
+// Load private racing only when selected to keep solo startup light.
+import { lazy, Suspense } from "react";
+// Ojo Barracks is a separate multiplayer world.
+const RaceRoom = lazy(() => import("./components/RaceRoom"));
 // A prominent orientation reminder is shared with the opening screen.
 import RotateTip from "./components/RotateTip";
 // The opening HUD label follows the researched route instead of a hard-coded old name.
@@ -26,7 +30,7 @@ const MUTE_KEY = "moruwa-muted";
 // The whole page. The canvas owns the moving road. This file owns the menus.
 export default function App() {
   // start, play, or board.
-  const [screen, setScreen] = useState("start");
+  const [screen, setScreen] = useState(() => new URLSearchParams(window.location.search).has("room") ? "race" : "start");
   // True after the first run, so the road can stay mounted behind the leaderboard.
   const [started, setStarted] = useState(false);
   // Where Back on the leaderboard should return.
@@ -228,9 +232,11 @@ export default function App() {
     // Centers the game on wide screens.
     <main className={screen === "play" ? "page page-playing" : "page"}>
       {/* The start card. */}
+      {/* Private invites open the finite head-to-head race. */}
+      {screen === "race" && <Suspense fallback={<p className="note">Loading Ojo Barracks…</p>}><RaceRoom initialCode={new URLSearchParams(window.location.search).get("room") || ""} onBack={() => setScreen("start")} /></Suspense>}
       {screen === "start" ? (
         // The instructions and the Start button.
-        <StartScreen muted={muted} onToggleMute={onToggleMute} onStart={onStart} onBoard={onBoard} />
+        <StartScreen onRace={() => setScreen("race")} muted={muted} onToggleMute={onToggleMute} onStart={onStart} onBoard={onBoard} />
       ) : null}
       {/* The run stays mounted after the first start, so a crash frame is not lost. */}
       {started ? (

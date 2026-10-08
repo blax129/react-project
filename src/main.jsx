@@ -1,8 +1,10 @@
+// Share the browser-owned guest identity throughout the game.
+import {PlayerProvider} from "./components/PlayerAccount";
 // React is the library that builds the page.
 import React from "react";
 // ReactDOM puts that page into the browser.
 import ReactDOM from "react-dom/client";
-// App is the whole Korope screen.
+// App is the whole Road Clear screen.
 import App from "./App";
 // These rules set the colors, the buttons, and the phone layout.
 import "./styles.css";
@@ -17,7 +19,7 @@ root.render(
   // Warns about unsafe mistakes while developing.
   <React.StrictMode>
     {/* The game itself. */}
-    <App />
+    <PlayerProvider><App /></PlayerProvider>
   {/* Closes the safety wrapper. */}
   </React.StrictMode>
 // Closes this call.

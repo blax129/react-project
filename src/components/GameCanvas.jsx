@@ -327,7 +327,7 @@ export default function GameCanvas({ runId, vehicleId, visible, pausedRef, contr
     // The box that gives the canvas its width.
     <div className="stage">
       {/* The hills. */}
-      <canvas ref={canvasRef} aria-label="Korope hills" />
+      <canvas ref={canvasRef} aria-label="Road Clear hills" />
       {assetState !== "ready" && <div className="vehicle-loading" role="status">{assetState === "error" ? <><p>Could not load your ride. Check your connection.</p><button className="button" onClick={() => setRetry(n => n + 1)}>Retry</button></> : "Loading your ride…"}</div>}
       {/* Large start lights announce each second while physics and fuel stay frozen. */}
       {assetState === "ready" && countdown > 0 && !pausedRef.current && <div className="start-countdown" role="status" aria-live="assertive" aria-atomic="true"><span>GET READY</span><strong key={countdown}>{countdown}</strong><small>Hold Gas when the countdown ends</small></div>}

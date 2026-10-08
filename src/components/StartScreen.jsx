@@ -1,3 +1,5 @@
+// Guests choose a unique name without email or password.
+import PlayerAccount from "./PlayerAccount";
 // Explain landscape play before the player starts the countdown.
 import RotateTip from "./RotateTip";
 // React state for the ride in the middle of the slideshow.
@@ -60,7 +62,7 @@ function SideRide({ ride, side, onSelect }) {
 }
 
 // The screen shown before a run starts.
-export default function StartScreen({ muted, onToggleMute, onStart, onBoard }) {
+export default function StartScreen({ muted, onToggleMute, onStart, onBoard, onRace }) {
   // Index of the ride in the middle. Remembers the last pick in this browser.
   const [index, setIndex] = useState(() => {
     // The saved ride id, or the korope.
@@ -111,7 +113,7 @@ export default function StartScreen({ muted, onToggleMute, onStart, onBoard }) {
     // The cream panel.
     <section className="panel start-panel">
       {/* The game name. */}
-      <h1>Korope</h1>
+      <h1>Road Clear</h1>
       {/* What the player is about to do. */}
       <p className="lead">
         Drive through 30 Lagos-inspired areas, from Festac through Iyana Iba to Ikeja. Pick your ride and make every drop of fuel count.
@@ -211,6 +213,10 @@ export default function StartScreen({ muted, onToggleMute, onStart, onBoard }) {
         <ShareButton />
         {/* Browse local scenery and driving advice before setting off. */}
         <RouteGuide />
+        {/* A named guest may submit shared scores or enter a private room. */}
+        <PlayerAccount />
+        {/* Multiplayer uses its own finite military course. */}
+        <button className="button race-entry" type="button" onClick={onRace}>1 v 1 · Ojo Barracks</button>
       {/* Closes this box. */}
       </div>
     {/* Closes this card. */}
