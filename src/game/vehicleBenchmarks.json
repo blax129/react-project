@@ -6,9 +6,9 @@
     "economy": 106.74,
     "brakingDistance": 20.48,
     "tankSeconds": 31.93,
-    "openingDistance": 6189,
-    "openingSeconds": 30.01,
-    "openingEnd": "30-second limit",
+    "openingDistance": 5780.6,
+    "openingSeconds": 23.37,
+    "openingEnd": "flip",
     "pickups": 2
   },
   "okada": {
@@ -18,8 +18,8 @@
     "economy": 166.74,
     "brakingDistance": 21.43,
     "tankSeconds": 41.8,
-    "openingDistance": 2077.4,
-    "openingSeconds": 5.88,
+    "openingDistance": 2079.5,
+    "openingSeconds": 6.03,
     "openingEnd": "flip",
     "pickups": 0
   },
@@ -30,10 +30,10 @@
     "economy": 87.34,
     "brakingDistance": 20.32,
     "tankSeconds": 22.99,
-    "openingDistance": 2065.2,
-    "openingSeconds": 6.22,
+    "openingDistance": 3987.6,
+    "openingSeconds": 12.32,
     "openingEnd": "flip",
-    "pickups": 0
+    "pickups": 1
   },
   "molue": {
     "speed": 296.31,
@@ -42,10 +42,10 @@
     "economy": 43.95,
     "brakingDistance": 27.54,
     "tankSeconds": 14.83,
-    "openingDistance": 3949.1,
-    "openingSeconds": 30.01,
-    "openingEnd": "30-second limit",
-    "pickups": 4
+    "openingDistance": 1411,
+    "openingSeconds": 22.59,
+    "openingEnd": "fuel",
+    "pickups": 1
   },
   "taxi": {
     "speed": 486.34,
@@ -54,10 +54,10 @@
     "economy": 106.48,
     "brakingDistance": 17.46,
     "tankSeconds": 21.89,
-    "openingDistance": 2190.5,
-    "openingSeconds": 5.18,
+    "openingDistance": 4013.5,
+    "openingSeconds": 9.93,
     "openingEnd": "flip",
-    "pickups": 0
+    "pickups": 1
   },
   "delivery": {
     "speed": 360.92,
@@ -66,10 +66,10 @@
     "economy": 72.15,
     "brakingDistance": 21.1,
     "tankSeconds": 19.99,
-    "openingDistance": 2070.6,
-    "openingSeconds": 6.68,
+    "openingDistance": 3953,
+    "openingSeconds": 13.5,
     "openingEnd": "flip",
-    "pickups": 0
+    "pickups": 1
   },
   "tipper": {
     "speed": 235.48,
@@ -78,10 +78,10 @@
     "economy": 36.09,
     "brakingDistance": 23.38,
     "tankSeconds": 15.33,
-    "openingDistance": 5880.3,
-    "openingSeconds": 30.01,
-    "openingEnd": "30-second limit",
-    "pickups": 6
+    "openingDistance": 1951.6,
+    "openingSeconds": 10.42,
+    "openingEnd": "flip",
+    "pickups": 1
   },
   "suv": {
     "speed": 436.94,
@@ -90,10 +90,10 @@
     "economy": 71.75,
     "brakingDistance": 18.54,
     "tankSeconds": 16.42,
-    "openingDistance": 5859.6,
-    "openingSeconds": 15.47,
+    "openingDistance": 3996.8,
+    "openingSeconds": 11.18,
     "openingEnd": "flip",
-    "pickups": 2
+    "pickups": 1
   },
   "dangote": {
     "speed": 197.46,
@@ -102,10 +102,10 @@
     "economy": 24.54,
     "brakingDistance": 31.7,
     "tankSeconds": 12.43,
-    "openingDistance": 2798,
-    "openingSeconds": 19.3,
+    "openingDistance": 3750,
+    "openingSeconds": 27.46,
     "openingEnd": "fuel",
-    "pickups": 2
+    "pickups": 4
   },
   "police": {
     "speed": 410.33,
@@ -114,10 +114,10 @@
     "economy": 78.61,
     "brakingDistance": 18.64,
     "tankSeconds": 19.16,
-    "openingDistance": 6189,
-    "openingSeconds": 30.01,
-    "openingEnd": "30-second limit",
-    "pickups": 2
+    "openingDistance": 2094.5,
+    "openingSeconds": 6.08,
+    "openingEnd": "flip",
+    "pickups": 0
   },
   "lexus": {
     "speed": 448.34,
@@ -126,8 +126,8 @@
     "economy": 82.45,
     "brakingDistance": 18.06,
     "tankSeconds": 18.39,
-    "openingDistance": 2133.4,
-    "openingSeconds": 5.48,
+    "openingDistance": 2125.5,
+    "openingSeconds": 5.63,
     "openingEnd": "flip",
     "pickups": 0
   },
@@ -138,8 +138,8 @@
     "economy": 78.93,
     "brakingDistance": 19.63,
     "tankSeconds": 17.03,
-    "openingDistance": 2146.1,
-    "openingSeconds": 5.36,
+    "openingDistance": 2125,
+    "openingSeconds": 5.33,
     "openingEnd": "flip",
     "pickups": 0
   },
@@ -150,10 +150,10 @@
     "economy": 178.32,
     "brakingDistance": 19.06,
     "tankSeconds": 47.89,
-    "openingDistance": 6189.4,
-    "openingSeconds": 30.01,
-    "openingEnd": "30-second limit",
-    "pickups": 1
+    "openingDistance": 2092.5,
+    "openingSeconds": 6.73,
+    "openingEnd": "flip",
+    "pickups": 0
   },
   "brt": {
     "speed": 273.5,
@@ -162,9 +162,9 @@
     "economy": 39.3,
     "brakingDistance": 26.37,
     "tankSeconds": 14.37,
-    "openingDistance": 2015.6,
-    "openingSeconds": 11.76,
-    "openingEnd": "flip",
+    "openingDistance": 1484.7,
+    "openingSeconds": 21.57,
+    "openingEnd": "fuel",
     "pickups": 1
   },
   "peugeot": {
@@ -174,10 +174,10 @@
     "economy": 80.99,
     "brakingDistance": 20.59,
     "tankSeconds": 20.9,
-    "openingDistance": 2104.4,
-    "openingSeconds": 6.28,
+    "openingDistance": 4005.6,
+    "openingSeconds": 12.21,
     "openingEnd": "flip",
-    "pickups": 0
+    "pickups": 1
   },
   "purewater": {
     "speed": 334.32,
@@ -186,8 +186,8 @@
     "economy": 61.48,
     "brakingDistance": 22.1,
     "tankSeconds": 18.39,
-    "openingDistance": 2066.1,
-    "openingSeconds": 7.21,
+    "openingDistance": 2027.4,
+    "openingSeconds": 7.55,
     "openingEnd": "flip",
     "pickups": 1
   },
@@ -198,10 +198,10 @@
     "economy": 48.02,
     "brakingDistance": 23.66,
     "tankSeconds": 22.99,
-    "openingDistance": 5170,
+    "openingDistance": 4332.6,
     "openingSeconds": 30.01,
     "openingEnd": "30-second limit",
-    "pickups": 5
+    "pickups": 4
   },
   "benzgle": {
     "speed": 463.54,
@@ -210,10 +210,10 @@
     "economy": 73.49,
     "brakingDistance": 17.97,
     "tankSeconds": 15.85,
-    "openingDistance": 6189.6,
-    "openingSeconds": 27.97,
-    "openingEnd": "fuel",
-    "pickups": 2
+    "openingDistance": 2134.5,
+    "openingSeconds": 5.43,
+    "openingEnd": "flip",
+    "pickups": 0
   },
   "benzcoupe": {
     "speed": 478.74,
@@ -222,9 +222,9 @@
     "economy": 73.37,
     "brakingDistance": 17.4,
     "tankSeconds": 15.33,
-    "openingDistance": 2170.6,
-    "openingSeconds": 5.2,
+    "openingDistance": 4011.8,
+    "openingSeconds": 10.06,
     "openingEnd": "flip",
-    "pickups": 0
+    "pickups": 1
   }
 }

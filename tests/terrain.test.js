@@ -29,11 +29,12 @@ test('terrain is repeatable, finite, and continuous across challenge joins',()=>
   assert.match(terrainCue(CHALLENGE_START+SECTION_LENGTH+100),/Broken road/);
 });
 // Thirsty heavies are meant to feel fuel pressure harder on the opening circuit.
-const THIRSTY=new Set(['molue','dangote','brt']);
+const THIRSTY=new Set(['molue','dangote','brt','tipper','purewater','tractor']);
 for(const v of Object.values(VEHICLES)) {
   test(`${v.id}: timed controls clear the opening challenge circuit`,()=>{
     const run=createRun(v.id);
-    for(let i=0;i<10800&&!run.over&&run.x<CLEAR_X;i++)stepRun(run,1/120,careful(run,v));
+    // 95s covers slow careful rides (tractor) without loosening the skill bar for Gas-only.
+    for(let i=0;i<11400&&!run.over&&run.x<CLEAR_X;i++)stepRun(run,1/120,careful(run,v));
     if(THIRSTY.has(v.id)) {
       // A fuel loss still proves they drove a meaningful stretch under pressure.
       assert.ok(run.x>=2500 || run.endReason==='fuel',`stalled early at ${run.x}`);

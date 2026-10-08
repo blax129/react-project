@@ -93,9 +93,9 @@ function HowToPlay() {
       <ul className="controls">
         <li>Hold Right, the right arrow, D, or Space to drive forward. The Gas pedal does the same.</li>
         <li>Hold Left, the left arrow, or A to brake, then reverse. The Brake pedal does the same. Reversing uses fuel; braking and coasting do not.</li>
-        <li>Let go of the gas before a steep lip. A tilt in the air is safe. You lose only if you land upside down.</li>
+        <li>Do not hold Gas the whole way. Before a crest or bridge lip, release Gas and dab Brake to plant the nose. In the air, Gas tips up and Brake tips down — you lose only if you land upside down.</li>
         <li>Press P, or the Pause button, to pause and resume.</li>
-        <li>Mud sticks hard and burns fuel. Debris slows you and can puncture the tank — crawl or jump clear. Bridges need a level nose; tip and the gorge ends the run. Green repair stops seal leaks and restore fuel.</li>
+        <li>Mud sticks hard and burns fuel. Debris slows you and can puncture the tank — crawl or jump clear. Bridges and sawtooth lips punish held Gas. Green repair stops seal leaks and restore fuel.</li>
         <li>At police checkpoints, brake, release Gas, and stop briefly for the barrier to open. Ramming the gate wastes 12% fuel.</li>
       </ul>
       <p className="note">

@@ -209,18 +209,43 @@ export function stepRun(run, dt, controls) {
       run.angVel += vehicle.noseDown * step;
     }
   } else {
-    // Gas still leans the nose up, so a hard climb can leave the ground.
+    // Look ahead so crest lips punish held Gas and reward a Brake dab.
+    const slopeAhead = roadSlope(run.x + 85);
+    // Cresting: a real drop ahead, not just climbing a hill.
+    const cresting = slopeAhead > 0.28 || (hill > -0.12 && Math.atan(slopeAhead) - hill > 0.38);
+    // How high this point sits above the local valley — taller peaks tip harder.
+    const hereY = roadY(run.x);
+    let valleyY = hereY;
+    for (let d = -140; d <= 140; d += 35) valleyY = Math.max(valleyY, roadY(run.x + d));
+    // 0 on flats; ~1 on a ~90-unit crest, capped so late peaks stay controllable with Brake.
+    const heightRisk = Math.min(1.55, Math.max(0, valleyY - hereY) / 90);
+    // Score pressure: farther along the route, the same crest flips more readily.
+    const scoreRisk = Math.min(1.35, Math.max(0, (run.x - 40) / METERS) / 520);
+    // Combined danger multiplies Gas tip and grip loss on lips.
+    const danger = 1 + heightRisk * 0.95 + scoreRisk * 0.7;
+    // Gas lifts the nose — mild on flats, strong on lips so blind throttle flips.
     if (gas) {
-      // Mild ground lean; full rotation remains available in the air.
-      run.angVel -= vehicle.wheelie * 0.015 * step;
+      // Flat-road lean stays readable; crest lean forces a release or Brake.
+      const tip = cresting ? 0.125 * danger : 0.04 * (1 + heightRisk * 0.35);
+      // Extra tip at speed so flying into a lip with Gas buried is costly.
+      const speedTip = 0.025 * Math.min(1, Math.abs(tangentSpeed) / 180) * (cresting ? danger : 1);
+      run.angVel -= vehicle.wheelie * (tip + speedTip) * step;
     }
-    // Brake pushes the nose down onto the slope.
+    // Brake plants the nose — the skilled answer on crests and bridge decks.
     if (brake) {
-      // A small nose-down. The big flip is reserved for the air.
-      run.angVel += vehicle.noseDown * 0.015 * step;
+      // Plant strength also grows with height so skilled Brake still saves tall peaks.
+      run.angVel += vehicle.noseDown * (cresting ? 0.11 * (1 + heightRisk * 0.35) : 0.045) * step;
     }
+    // Gas loosens grip on a crest; Brake tightens it so feathering feels intentional.
+    const stickMul = gas && cresting
+      ? Math.max(0.2, 0.36 / danger)
+      : gas
+        ? 0.7
+        : brake
+          ? 1.35 + heightRisk * 0.2
+          : 1;
     // Pulls the body back toward the slope so it rides the hill.
-    run.angVel += wrap(hill - run.angle) * vehicle.stick * 12 * step;
+    run.angVel += wrap(hill - run.angle) * vehicle.stick * 12 * stickMul * step;
   }
   // Stops the spin from growing forever. Heavier rides damp faster.
   run.angVel *= Math.exp(-(vehicle.spinDamp + (grounded ? 7 : 0)) * step);

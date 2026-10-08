@@ -6,44 +6,55 @@ export const SECTION_LENGTH = 2200;
 const smooth = t => t*t*(3-2*t);
 const clamp01 = t => Math.max(0,Math.min(1,t));
 
-// Fixed landmarks make each section learnable, with smooth joins and no cliffs.
+// Fixed landmarks make each section learnable. Profiles punish held Gas at the lips.
 export const CHALLENGES = [
   {
     name: 'Crest control',
-    advice: 'Build speed uphill. Release gas before the crest.',
-    profile: [[0,0],[120,0],[780,110],[840,110],[925,-100],[1000,-100],[2100,0],[2200,0]],
+    advice: 'Build speed uphill. Release Gas and dab Brake before the crest.',
+    // Taller climb then a steeper drop — holding Gas over the lip launches a flip.
+    profile: [[0,0],[100,0],[680,116],[780,116],[920,-102],[1080,-102],[2100,0],[2200,0]],
   },
   {
     name: 'Broken road',
-    advice: 'Use short throttle bursts. Keep the nose level.',
-    profile: [[0,0],[180,0],[330,15],[470,-6],[620,17],[760,-6],[910,19],[1050,-4],[1200,14],[1400,0],[1700,0]],
+    advice: 'Short Gas bursts. Brake between humps to keep the nose level.',
+    // Sharper washboard that pitches the cabin if you keep Gas buried.
+    profile: [[0,0],[140,0],[300,24],[430,-12],[570,28],[710,-14],[850,30],[990,-12],[1130,24],[1300,-8],[1520,0],[1700,0]],
   },
   {
     name: 'Momentum valley',
-    advice: 'Coast downhill, then use momentum for the climb.',
-    profile: [[0,0],[180,0],[420,-90],[570,-90],[1450,30],[1900,0],[2200,0]],
+    advice: 'Coast downhill — Brake to settle. Gas only on the climb out.',
+    // Deeper bowl so the exit crest sits higher and flips harder under Gas.
+    profile: [[0,0],[160,0],[400,-110],[560,-110],[1400,48],[1880,0],[2200,0]],
   },
   {
     name: 'Double crest',
-    advice: 'Brake before the drop. Match your tilt to the landing.',
-    profile: [[0,0],[140,0],[650,65],[700,65],[790,-35],[960,-35],[1540,45],[1600,45],[1690,-15],[2100,0],[2200,0]],
+    advice: 'Brake before each drop. Match your tilt, then Gas again.',
+    profile: [[0,0],[120,0],[580,80],[660,80],[780,-48],[940,-48],[1460,62],[1540,62],[1660,-28],[2080,0],[2200,0]],
   },
-  // Elevated deck over a gorge — tip or crawl and the drop ends the run.
   {
     name: 'Bridge run',
-    advice: 'Build speed onto the deck. Keep the nose level — tip and you fall into the gorge.',
-    profile: [[0,0],[160,0],[380,58],[460,58],[1080,58],[1160,58],[1280,-130],[1480,-130],[1900,10],[2200,0]],
+    advice: 'Build speed onto the deck. Feather Gas — tip and the gorge ends the run.',
+    // Higher deck over a deeper gorge — tip risk climbs with the span height.
+    profile: [[0,0],[140,0],[360,66],[440,66],[1000,66],[1080,66],[1220,-130],[1460,-130],[1880,10],[2200,0]],
+  },
+  // Rapid lips that force Gas off / Brake on before each jump.
+  {
+    name: 'Sawtooth lips',
+    advice: 'Release Gas before every lip. Brake to plant, then Gas again.',
+    profile: [[0,0],[120,0],[320,54],[380,54],[500,-36],[620,-36],[820,58],[880,58],[1000,-42],[1140,-42],[1360,66],[1420,66],[1540,-48],[1720,-48],[1980,0],[2200,0]],
   },
 ];
 
-// The first circuit teaches the four obstacles. Later circuits keep escalating.
+// The first circuit teaches the obstacles. Later circuits keep escalating.
 // Bounded growth prevents huge cliffs or numerically unstable endless terrain.
 export function sectionDifficulty(index) {
   const extra = Math.max(0, index - CHALLENGES.length + 1);
-  const pressure = extra / (extra + 12);
+  const pressure = extra / (extra + 10);
   return {
-    strength: .95 + hardship(CHALLENGE_START + index * SECTION_LENGTH) * .7 + pressure * 1.2,
-    sharpness: pressure * .65,
+    // Peak height grows with distance — taller points mean harder capsizes.
+    strength: 1.0 + hardship(CHALLENGE_START + index * SECTION_LENGTH) * .85 + pressure * 1.55,
+    // Sharper joins with distance — lips become less forgiving, never walls.
+    sharpness: 0.06 + pressure * .68,
   };
 }
 
@@ -72,8 +83,8 @@ function profileHeight(points,x,sharpness=0) {
 export function groundY(x) {
   const fade=smooth(clamp01((x-80)/370));
   const hard=hardship(x);
-  // Small background rolls leave the deliberate obstacles easy to read.
-  const baseRoll=(Math.sin(x/190)*(10+hard*18)+Math.sin(x/67+.8)*(3+hard*4))*fade;
+  // Background rolls grow sooner so open road still needs throttle discipline.
+  const baseRoll=(Math.sin(x/180)*(12+hard*20)+Math.sin(x/61+.8)*(4+hard*5))*fade;
   let obstacle=0;
   if(x>=CHALLENGE_START) {
     const index=Math.floor((x-CHALLENGE_START)/SECTION_LENGTH);
@@ -82,14 +93,12 @@ export function groundY(x) {
     const {strength,sharpness}=sectionDifficulty(index);
     obstacle=profileHeight(CHALLENGES[index%CHALLENGES.length].profile,local,sharpness)*strength;
   }
-  // Broad linking hills replace long recovery flats while keeping a short start.
-  const rollingFade=smooth(clamp01((x-650)/700));
-  const linkingHills=(Math.sin((x-650)/155)*(17+hard*14))*rollingFade;
-  // Later circuits add short hill pairs between the existing major obstacles.
-  const comboFade=smooth(clamp01((x-9900)/6000));
-  // The smaller wave requires repeated throttle and landing adjustments.
-  const combos=Math.sin(x/94)*14*comboFade;
-  // Combine the teachable opening with denser late-game climbs.
+  // Linking hills demand release-and-Gas rhythm between big landmarks.
+  const rollingFade=smooth(clamp01((x-550)/650));
+  const linkingHills=(Math.sin((x-550)/148)*(18+hard*14))*rollingFade;
+  // Late-game combos: tight pairs that punish held Gas between crests.
+  const comboFade=smooth(clamp01((x-8500)/5000));
+  const combos=Math.sin(x/88)*15*comboFade + Math.sin(x/52)*6*comboFade;
   // Each neighbourhood adds a different signed road texture to the shared course.
   const area=areaAt(x), local=((Math.max(0,x)%AREA_LENGTH)/AREA_LENGTH);
   // A fourth-power envelope makes height and slope continuous at every area join.
@@ -99,7 +108,7 @@ export function groundY(x) {
   // Depressions, humps and rollers need different throttle and landing decisions.
   const shape=area.roadStyle==='potholes'?-wave*wave:area.roadStyle==='humps'?wave*wave:area.roadStyle==='rumble'?Math.sin(local*Math.PI*14):wave;
   // Bound the added geometry so the scene identity does not introduce vertical walls.
-  const localRoad=shape*area.terrainAmplitude*envelope;
+  const localRoad=shape*area.terrainAmplitude*1.12*envelope;
   // The final road includes both progressive difficulty and local obstacle character.
   return 340-baseRoll-obstacle-linkingHills-combos-localRoad;
 }
@@ -110,7 +119,7 @@ export function groundSlope(x) {
 
 // Tell the player before an obstacle, without exposing implementation details.
 export function terrainCue(x) {
-  if(x<CHALLENGE_START-350) return 'Warm-up · Build speed and learn your balance.';
+  if(x<CHALLENGE_START-350) return 'Warm-up · Feather Gas. Brake plants the nose before a lip.';
   const index=Math.max(0,Math.floor((x-CHALLENGE_START+350)/SECTION_LENGTH));
   const section=CHALLENGES[index%CHALLENGES.length];
   const ahead=x<CHALLENGE_START+index*SECTION_LENGTH;
