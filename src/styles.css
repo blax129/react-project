@@ -1281,6 +1281,47 @@ th {
 .settings-dialog { width: min(400px, calc(100vw - 24px)); box-sizing: border-box; max-height: calc(100dvh - 24px); overflow: auto; border: 0; border-radius: 18px; padding: 24px; background: #fff8eb; color: #211c16; }
 /* Dim the game behind settings so the active controls are obvious. */
 .settings-dialog::backdrop { background: #080e19bb; }
+
+/* Username picker: keep the typing box large and obvious. */
+.player-dialog .player-form {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0;
+}
+
+.player-dialog .player-name-input {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  min-height: 52px;
+  font-size: 18px;
+}
+
+.player-dialog .player-claim {
+  width: 100%;
+  min-height: 48px;
+}
+
+.player-dialog .claimed-name {
+  display: grid;
+  gap: 4px;
+  margin: 12px 0;
+  padding: 12px;
+  border-radius: 12px;
+  background: #f3e8d4;
+}
+
+.player-dialog .claimed-name strong {
+  font-size: 22px;
+}
+
+.player-dialog .claimed-name small,
+.player-dialog .player-name-hint {
+  display: block;
+  color: #5c5348;
+  font-size: 13px;
+}
+
 /* Separate the sound group from the Done button. */
 .settings-dialog fieldset { border: 1px solid #b8ac94; border-radius: 10px; padding: 16px; margin: 0 0 20px; }
 /* Give the section title a clear visual hierarchy. */
