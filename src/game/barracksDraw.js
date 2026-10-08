@@ -8,6 +8,8 @@ import {barracksY,barracksSurface,RACE_FINISH,CHECKPOINT_GAP} from './barracks';
 const rect=(c,x,y,w,h,colour)=>{c.fillStyle=colour;c.fillRect(x,y,w,h);};
 // Draw a clearly readable sign above the track.
 function sign(c,x,y,label,colour='#ded5ad'){rect(c,x-3,y,6,80,'#686950');rect(c,x-80,y-27,160,30,colour);c.fillStyle='#17271d';c.font='bold 12px system-ui';c.textAlign='center';c.fillText(label,x,y-7);}
+// Hazard boards use a hotter colour so mud and gravel read as danger, not scenery.
+function dangerSign(c,x,y,label){rect(c,x-3,y,6,72,'#5a4030');rect(c,x-92,y-28,184,32,'#e4a045');c.fillStyle='#2a1608';c.font='bold 12px system-ui';c.textAlign='center';c.fillText(label,x,y-7);}
 // Draw the fictional Ojo Barracks training course and the other racer's latest position.
 export function drawBarracks(c,run,opponent,vehicleId) {
   // A dusty green horizon replaces the solo city skyline.
@@ -43,9 +45,21 @@ export function drawBarracks(c,run,opponent,vehicleId) {
   // Give the main road a light dirt edge and a dark, rough driving surface.
   c.beginPath();for(let x=left;x<=right;x+=6){if(x===left)c.moveTo(x,barracksY(x));else c.lineTo(x,barracksY(x));}c.strokeStyle='#c4b38a';c.lineWidth=14;c.stroke();c.strokeStyle='#484d3b';c.lineWidth=8;c.stroke();
   // Paint surface hazards in the same exact coordinates as their physics effects.
-  for(let x=Math.floor(left/12)*12;x<right;x+=12){const surface=barracksSurface(x);if(surface){c.strokeStyle=surface==='mud'?'#352b22':'#9b9c86';c.lineWidth=7;c.beginPath();c.moveTo(x,barracksY(x)-1);c.lineTo(x+12,barracksY(x+12)-1);c.stroke();}}
+  for(let x=Math.floor(left/12)*12;x<right;x+=12){const surface=barracksSurface(x);if(surface){c.strokeStyle=surface==='mud'?'#352b22':'#9b9c86';c.lineWidth=surface==='mud'?10:7;c.beginPath();c.moveTo(x,barracksY(x)-1);c.lineTo(x+12,barracksY(x+12)-1);c.stroke();}}
   // Checkpoint signs make the safe respawn aprons easy to recognize.
   for(let x=Math.max(0,Math.floor(left/CHECKPOINT_GAP)*CHECKPOINT_GAP);x<right&&x<RACE_FINISH;x+=CHECKPOINT_GAP)sign(c,x,barracksY(x)-85,x===0?'TRAINING START':`CHECKPOINT ${x/CHECKPOINT_GAP}`,x<=run.checkpoint?'#9bd0a0':'#ded5ad');
+  // Warn before each sector's hazard and climb so players can prepare.
+  for(let base=Math.max(0,Math.floor(left/CHECKPOINT_GAP)*CHECKPOINT_GAP);base<right&&base<RACE_FINISH;base+=CHECKPOINT_GAP){
+    const sector=base/CHECKPOINT_GAP;
+    // Sign just before the mud/gravel patch.
+    const hazardX=base+320;
+    if(hazardX>left&&hazardX<right)dangerSign(c,hazardX,barracksY(hazardX)-88,sector%2?'GRAVEL AHEAD':'MUD AHEAD — EASE OFF');
+    // Sign at the start of the speed runway before the climb.
+    const climbX=base+580;
+    if(climbX>left&&climbX<right)dangerSign(c,climbX,barracksY(climbX)-88,'CLIMB AHEAD — BUILD SPEED');
+    // Late-race second mud strip after the crest.
+    if(sector>=7){const lateX=base+1280;if(lateX>left&&lateX<right)dangerSign(c,lateX,barracksY(lateX)-88,'MUD AHEAD');}
+  }
   // Fuel markers use bright gold jerrycans and a simple FUEL label.
   for(const can of run.cans){if(can.taken||can.x<left||can.x>right)continue;const y=barracksY(can.x)-42;rect(c,can.x-14,y-15,28,32,'#ffd05a');rect(c,can.x-6,y-22,12,7,'#293f31');c.fillStyle='#25392b';c.font='bold 11px system-ui';c.textAlign='center';c.fillText('FUEL',can.x,y+6);}
   // A tall checked gate is visible before crossing the finite finish line.

@@ -1412,6 +1412,21 @@ th {
 .race-error { background:#4c3029;border:1px solid #cb9475;padding:12px;border-radius:8px; }
 /* Keep race fuel and checkpoint data in a compact wrapping row. */
 .race-stats { display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;padding:10px;background:#202f28;font-size:14px; }
+/* Danger-ahead banner — hot colour so mud/climb warnings are hard to miss. */
+.race-warning {
+  flex: 1 1 100%;
+  margin-top: 2px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: #c47a22;
+  color: #1c1208;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  animation: race-warn-pulse 1.1s ease-in-out infinite;
+}
+@keyframes race-warn-pulse {
+  50% { filter: brightness(1.12); }
+}
 /* Canvas dimensions are fitted by the renderer for the current viewport. */
 .race-stage { position:relative;text-align:center;line-height:0;overflow:hidden;border-radius:12px;background:#354939; }
 /* The synchronized countdown and respawn delay cover only the road. */

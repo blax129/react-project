@@ -89,10 +89,14 @@ export const barracksSlope = (x) => (barracksY(x + 1) - barracksY(x - 1)) / 2;
 export const BARRACKS_TERRAIN = { heightAt: barracksY, slopeAt: barracksSlope };
 
 // Both opponents encounter fuel at identical fixed locations.
-// Scarce gold cans keep fuel pressure high on the long military course.
-export const RACE_FUEL = Array.from({ length: Math.ceil(RACE_FINISH / 780) }, (_, i) => 480 + i * 780).filter(
-  (x) => x < RACE_FINISH - 220,
+// Wider gaps (was 780) make empty-tank pressure a real race decision.
+export const RACE_FUEL_GAP = 1180;
+// First can still appears early enough that the opening sector is learnable.
+export const RACE_FUEL = Array.from({ length: Math.ceil(RACE_FINISH / RACE_FUEL_GAP) }, (_, i) => 520 + i * RACE_FUEL_GAP).filter(
+  (x) => x < RACE_FINISH - 280,
 );
+// Extra race-only burn on top of each vehicle's solo fuelBurn.
+export const RACE_FUEL_EXTRA = 1.35;
 
 // How much forward speed (units/sec) a climb at this spot expects.
 // Flat / gentle grades return 0. Steeper faces need a run-up — crawl and you slide.
@@ -134,12 +138,31 @@ export function barracksSurface(x) {
   // Surface hazards stay clear of safe respawn aprons and the speed runway.
   const local = ((x % CHECKPOINT_GAP) + CHECKPOINT_GAP) % CHECKPOINT_GAP;
   const sector = Math.floor(x / CHECKPOINT_GAP);
-  // Mud / gravel before the runway — clear it, then accelerate into the climb.
-  if (local > 380 && local < 520) return sector % 2 ? 'gravel' : 'mud';
-  // Later sectors add a short mud strip after the crest to punish careless landings.
-  if (sector >= 8 && local > 1380 && local < 1480) return 'mud';
+  // Wider mud / gravel before the runway — clear it, then accelerate into the climb.
+  if (local > 360 && local < 540) return sector % 2 ? 'gravel' : 'mud';
+  // Later sectors add a thicker mud strip after the crest.
+  if (sector >= 7 && local > 1360 && local < 1520) return 'mud';
   // Other road sections use normal traction.
   return '';
+}
+
+// Look ahead for the next hazard so the HUD and roadside signs can warn the driver.
+export function dangerAhead(x, look = 560) {
+  // Scan forward in short steps for the first surface threat.
+  for (let d = 60; d <= look; d += 16) {
+    const surface = barracksSurface(x + d);
+    // Mud is the sticky fuel sink — call it out first.
+    if (surface === 'mud') return { type: 'mud', at: x + d, label: '⚠ MUD AHEAD' };
+    // Gravel slips at high speed — ease off before you hit it.
+    if (surface === 'gravel') return { type: 'gravel', at: x + d, label: '⚠ GRAVEL AHEAD' };
+  }
+  // Inside a sector, warn before the proving climb so players build speed on the runway.
+  const local = ((x % CHECKPOINT_GAP) + CHECKPOINT_GAP) % CHECKPOINT_GAP;
+  if (local > 540 && local < 720) {
+    return { type: 'climb', at: x + (720 - local), label: '⚠ CLIMB AHEAD — BUILD SPEED' };
+  }
+  // No near threat in the look-ahead window.
+  return null;
 }
 
 // After physics: steep faces keep only cars that still hold the required speed.
@@ -180,15 +203,23 @@ export function stepRaceRun(run, dt, controls) {
   );
   // Determine the shared surface at the vehicle's current position.
   const surface = grounded ? barracksSurface(run.x) : '';
-  // Mud scrubs momentum and increases fuel pressure under throttle.
+  // Mud sticks harder and drinks fuel if you keep Gas buried.
   if (surface === 'mud') {
-    run.vx *= Math.exp(-dt * 0.85);
-    if (controls.gas) run.fuel = Math.max(0, run.fuel - dt * 2.0);
+    // Strong horizontal scrub — momentum dies fast in the muck.
+    run.vx *= Math.exp(-dt * 1.65);
+    // Vertical scrub stops bouncing out of the patch for free.
+    run.vy *= Math.exp(-dt * 1.1);
+    // Holding Gas in mud burns a noticeable extra chunk of tank.
+    if (controls.gas) run.fuel = Math.max(0, run.fuel - dt * 3.4);
   }
-  // Controlled low-speed gravel entries avoid the extra slip penalty.
-  if (surface === 'gravel' && Math.abs(run.vx) > 140) run.vx *= Math.exp(-dt * 0.55);
+  // Gravel slips harder at speed — crawl or you lose the run-up.
+  if (surface === 'gravel' && Math.abs(run.vx) > 110) run.vx *= Math.exp(-dt * 0.95);
   // Preserve the tested driving controls, suspension and upside-down crash rules.
   const event = stepRun(run, dt, controls);
+  // Race-only fuel pressure on top of each vehicle's normal burn rate.
+  if ((controls.gas || controls.right) && !controls.brake && !controls.left && run.fuel > 0 && !run.over) {
+    run.fuel = Math.max(0, run.fuel - RACE_FUEL_EXTRA * dt);
+  }
   // Re-check contact after the step so the gate matches the new pose.
   const stillGrounded = run.wheels.some(
     (w) =>

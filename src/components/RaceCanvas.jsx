@@ -5,7 +5,7 @@ import {createInputState,GAS_KEYS,BRAKE_KEYS} from '../game/controls';
 // Fixed physics steps keep handling independent of mobile display refresh rate.
 import {createSimulationClock} from '../game/simulationClock';
 // The finite course provides checkpoint restoration and dedicated hazards.
-import {createRaceRun,stepRaceRun,RACE_FINISH} from '../game/barracks';
+import {createRaceRun,stepRaceRun,dangerAhead,RACE_FINISH} from '../game/barracks';
 // Military scenery and opponent ghosts are drawn separately from the solo world.
 import {drawBarracks} from '../game/barracksDraw';
 // Load only the two selected car images before racing.
@@ -23,7 +23,7 @@ export default function RaceCanvas({room,userId,onSnapshot}) {
   // Keep refs current without restarting the animation effect on every network poll.
   roomRef.current=room;snapshotRef.current=onSnapshot;
   // Display only low-frequency dashboard updates in React.
-  const [hud,setHud]=useState({fuel:100,x:40,checkpoint:0,deaths:0}),[overlay,setOverlay]=useState('Loading vehicles…');
+  const [hud,setHud]=useState({fuel:100,x:40,checkpoint:0,deaths:0,warning:''}),[overlay,setOverlay]=useState('Loading vehicles…');
   // Start one isolated simulation for this round.
   useEffect(()=>{
     // Resolve the current seat and chosen vehicle from authoritative room state.
@@ -77,7 +77,7 @@ export default function RaceCanvas({room,userId,onSnapshot}) {
       // Draw the base, road, fuel, checkpoints and latest rival ghost.
       drawBarracks(c,run,other,vehicle.id);
       // Update accessible overlays and fuel/progress text at ten hertz.
-      if(now-lastHud>100){lastHud=now;setOverlay(label);setHud({fuel:run.fuel,x:run.x,checkpoint:run.checkpoint,deaths:run.deaths});}
+      if(now-lastHud>100){lastHud=now;setOverlay(label);const warn=dangerAhead(run.x);setHud({fuel:run.fuel,x:run.x,checkpoint:run.checkpoint,deaths:run.deaths,warning:warn?warn.label:''});}
     // Finish an animation frame.
     }
     // Begin the frame loop after all handlers exist.
@@ -93,7 +93,7 @@ export default function RaceCanvas({room,userId,onSnapshot}) {
   // Display race-specific fuel, recovery and progress information.
   return <div className="race-driving">
     {/* A compact dashboard leaves room for the road on landscape phones. */}
-    <div className="race-stats"><span>Fuel <strong>{Math.ceil(hud.fuel)}%</strong></span><span>Checkpoint {hud.checkpoint/2000}/14</span><span>Respawns {hud.deaths}</span><span>{Math.floor(hud.x/RACE_FINISH*100)}% complete</span></div>
+    <div className="race-stats"><span>Fuel <strong>{Math.ceil(hud.fuel)}%</strong></span><span>Checkpoint {hud.checkpoint/2000}/14</span><span>Respawns {hud.deaths}</span><span>{Math.floor(hud.x/RACE_FINISH*100)}% complete</span>{hud.warning?<span className="race-warning" role="status">{hud.warning}</span>:null}</div>
     {/* The overlay is separate from the pedals so touch targets never move. */}
     <div className="race-stage"><canvas ref={canvas} aria-label="Ojo Barracks military obstacle course"/>{overlay&&<div className="race-overlay" role="status">{overlay}</div>}</div>
     {/* Race mode uses the same brake/reverse and gas/air-tilt techniques as solo. */}
