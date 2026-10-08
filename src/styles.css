@@ -1218,9 +1218,81 @@ th {
 
 /* Mobile picker: the ride and primary action come before optional instructions. */
 .start-panel { display: flex; flex-direction: column; }
-.start-panel > .actions { order: 1; }
-.driving-help { order: 2; margin-top: 20px; }
+.driving-help { margin-top: 20px; }
 .driving-help summary { cursor: pointer; font-weight: 700; padding: 12px 0; }
+
+/* Home: two equal mode boxes — vehicles only appear after you pick one. */
+.mode-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+  margin: 18px 0 8px;
+}
+.mode-card {
+  display: grid;
+  gap: 8px;
+  text-align: left;
+  padding: 20px 18px;
+  border: 2px solid #1c140f;
+  border-radius: 16px;
+  background: #fffdf8;
+  color: #1c140f;
+  cursor: pointer;
+  font: inherit;
+  min-height: 160px;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.mode-card:hover,
+.mode-card:focus-visible {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 #1c140f22;
+  outline: none;
+}
+.mode-card-label {
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #5c5348;
+}
+.mode-card-title {
+  font-family: Fraunces, serif;
+  font-size: clamp(22px, 4vw, 28px);
+  font-weight: 700;
+  line-height: 1.15;
+}
+.mode-card-copy {
+  font-size: 14px;
+  line-height: 1.4;
+  color: #3d342c;
+}
+.mode-card-solo {
+  background: linear-gradient(160deg, #fff8eb 0%, #f3e4c4 100%);
+}
+.mode-card-race {
+  background: linear-gradient(160deg, #e8f0e4 0%, #c5d4b8 100%);
+  border-color: #1f3328;
+}
+.mode-back {
+  align-self: flex-start;
+  margin: 4px 0 8px;
+}
+.mode-heading {
+  margin-top: 4px;
+}
+.solo-actions {
+  margin-top: 8px;
+}
+.solo-actions .button {
+  width: 100%;
+  min-height: 52px;
+}
+.home-actions {
+  margin-top: 16px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
 .vehicle-loading { position: absolute; inset: 0; display: grid; place-content: center; text-align: center; padding: 20px; background: #182432ed; color: white; z-index: 1; }
 .rotate-tip { display: none; }
 .pedal { touch-action: none; user-select: none; -webkit-user-select: none; }
@@ -1230,8 +1302,10 @@ th {
   .start-panel .game-title { font-size: clamp(36px, 10vw, 52px); }
   .start-panel .lead { font-size: 16px; line-height: 1.4; }
   .start-panel h2 { font-size: 22px; margin: 14px 0 10px; }
-  .start-panel > .actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .start-panel > .actions > button:first-child { grid-column: 1 / -1; min-height: 52px; }
+  .mode-grid { grid-template-columns: 1fr; gap: 10px; }
+  .mode-card { min-height: 0; padding: 16px 14px; }
+  .home-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .solo-actions .button { grid-column: 1 / -1; }
   .page-playing { padding: max(10px, env(safe-area-inset-top)) 8px max(12px, env(safe-area-inset-bottom)); }
   .rotate-tip { display: block; color: #d4dfed; text-align: center; font-size: 14px; margin: 12px 0; }
   .stage { padding-bottom: 104px; background: #182432; }
@@ -1406,6 +1480,40 @@ th {
 .race-eyebrow { font:700 12px system-ui;letter-spacing:.16em;color:#d3c998; }
 /* Olive panels group admission, readiness and results. */
 .race-panel { background:#26372d;border:1px solid #788265;border-radius:18px;padding:24px;margin-block:18px; }
+/* Visual vehicle roster for 1 v 1 — kept off the home screen on purpose. */
+.race-vehicles-heading { margin: 14px 0 8px; font-size: 16px; color: #e8f1df; }
+.race-vehicle-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(108px, 1fr));
+  gap: 8px;
+  margin: 0 0 16px;
+  max-height: 280px;
+  overflow: auto;
+  padding: 4px;
+}
+.race-vehicle-chip {
+  display: grid;
+  gap: 4px;
+  justify-items: center;
+  padding: 8px 6px;
+  border: 2px solid #5f7358;
+  border-radius: 12px;
+  background: #1c2a22;
+  color: #f2e8cc;
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+.race-vehicle-chip img {
+  width: 88px;
+  height: 52px;
+  object-fit: contain;
+}
+.race-vehicle-chip.selected {
+  border-color: #f0c14a;
+  background: #2f4536;
+  box-shadow: 0 0 0 1px #f0c14a88;
+}
 /* Both player progress bars remain visible even when the rival is off-screen. */
 .race-roster { display:grid;grid-template-columns:1fr 1fr;gap:12px; }
 /* Each seat gets a distinct readable card. */
