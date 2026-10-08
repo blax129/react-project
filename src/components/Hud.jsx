@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 // Open sound preferences without crowding the driving controls.
 import SettingsButton from "./SettingsButton";
 
-export default function Hud({ score, fuel, area, paused, muted, onTogglePause, onToggleMute, onOpenSettings }) {
+export default function Hud({ score, fuel, area, paused, muted, onTogglePause, onToggleMute, onOpenSettings, onMenu }) {
   const previous = useRef(fuel);
   const [refilled, setRefilled] = useState(false);
   const [fullscreen, setFullscreen] = useState(false);
@@ -46,6 +46,12 @@ export default function Hud({ score, fuel, area, paused, muted, onTogglePause, o
     </div>
     <div className="actions hud-actions">
       <button className="button ghost" type="button" onClick={onTogglePause}>{paused ? "Resume" : "Pause"}</button>
+      {/* Only while paused — leave the run and return to the start card. */}
+      {paused && onMenu ? (
+        <button className="button ghost" type="button" onClick={onMenu}>
+          Top menu
+        </button>
+      ) : null}
       {/* Opening settings pauses the run before showing the sound controls. */}
       <SettingsButton muted={muted} onToggleMute={onToggleMute} onOpen={onOpenSettings} />
       <button className="button ghost fullscreen-button" type="button" onClick={toggleFullscreen}>{fullscreen ? "Exit full screen" : "Full screen"}</button>

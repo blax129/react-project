@@ -31,15 +31,19 @@ function cycleHazards(index) {
   // Place sharp debris after the first major climb.
   const debris = gentlePosition(base + 4400);
   // Describe each feature with a stable ID and visible world-space bounds.
+  // Bridge span — drawn with piers; the matching terrain drop punishes tip-overs.
+  const bridge = gentlePosition(base + 1400, 420);
   const features = [
-    // Mud rewards momentum and makes continuous throttle expensive.
-    { id: `mud-${index}`, type: 'mud', x: gentlePosition(base + 2500, 270), width: 180 + Math.min(index, 6) * 15 },
+    // Wider mud — stickier and thirstier under Gas.
+    { id: `mud-${index}`, type: 'mud', x: gentlePosition(base + 2500, 300), width: 220 + Math.min(index, 8) * 18 },
     // Debris only punctures a tank when crossed too fast while grounded.
-    { id: `debris-${index}`, type: 'debris', x: debris, width: 100 },
+    { id: `debris-${index}`, type: 'debris', x: debris, width: 120 },
     // A repair stop gives every puncture a reachable recovery opportunity.
     { id: `repair-${index}`, type: 'repair', x: debris + 650, width: 90 },
     // Police require a brief controlled stop before raising the barrier.
     { id: `police-${index}`, type: 'police', x: gentlePosition(base + 6200), width: 90 },
+    // Marked bridge so players see the gorge before they commit.
+    { id: `bridge-${index}`, type: 'bridge', x: bridge, width: 380 + Math.min(index, 5) * 20 },
   // Finish this cycle's feature list.
   ];
   // Store the list so drawing and physics share the same positions.
@@ -65,9 +69,11 @@ function areaHazards(index) {
   // An existing feature takes priority when its warning would overlap this one.
   if (existing.some(h=>Math.abs(h.x-x)<360)) { regionalFeatures.set(index,[]); return []; }
   // A regional obstacle gets a stable ID so penalties and clearance cannot repeat.
-  const features=[{id:'area-'+index,type:area.hazard,x,width:area.hazard==='mud'?140+(index%5)*18:90}];
+  const features=[{id:'area-'+index,type:area.hazard,x,width:area.hazard==='mud'?180+(index%5)*22:area.hazard==='debris'?110:90}];
   // Every additional puncture risk also gets a dedicated reachable repair opportunity.
   if(area.hazard==='debris') features.push({id:'area-repair-'+index,type:'repair',x:x+570,width:100});
+  // Later areas also get a marked bridge when the local theme is not already a stop.
+  if(index>=8 && index%4===0) features.push({id:'area-bridge-'+index,type:'bridge',x:gentlePosition(area.from+1100,400),width:360});
   // Store the completed local feature set.
   regionalFeatures.set(index,features);
   // Return the fixed regional obstacles.
@@ -108,15 +114,15 @@ export function stepHazards(run, dt, grounded, controls) {
   // Leave custom terrain simulations unchanged.
   if (!run.hazardsEnabled) return;
   // Leak damage continues while moving or waiting, until a service stop repairs it.
-  if (run.leaking) run.fuel = Math.max(0, run.fuel - 1.8 * dt);
+  if (run.leaking) run.fuel = Math.max(0, run.fuel - 2.7 * dt);
   // Only ground contact with sharp debris can puncture the tank.
   const debris = grounded && activeHazard(run, 'debris');
-  // A given debris patch can damage the same run only once.
-  if (debris && Math.abs(run.vx) > 110 && !run.hazardsHit.has(debris.id)) {
+  // A given debris patch can damage the same run only once. Lower speed threshold = easier puncture.
+  if (debris && Math.abs(run.vx) > 72 && !run.hazardsHit.has(debris.id)) {
     // Remember the hit so reversing cannot repeatedly apply the initial damage.
     run.hazardsHit.add(debris.id);
     // The initial visible puncture costs fuel immediately.
-    run.fuel = Math.max(0, run.fuel - 12);
+    run.fuel = Math.max(0, run.fuel - 18);
     // Start the ongoing leak and make its warning visible.
     run.leaking = true;
   // Finish puncture handling.
@@ -182,7 +188,13 @@ export function hazardCue(run) {
   // Let ordinary terrain warnings return between hazards.
   if (!next) return '';
   // Explain the action needed without hiding the obstacle's consequences.
-  const advice = { mud: 'MUD · Carry momentum. Short throttle bursts save fuel.', debris: 'SHARP DEBRIS · Slow to a crawl or jump clear to avoid a fuel leak.', repair: 'REPAIR STOP · Seal leaks and collect 20% emergency fuel.', police: 'POLICE CHECKPOINT · Brake, release Gas, and stop briefly. Ramming costs fuel.' };
+  const advice = {
+    mud: 'MUD · Sticky and thirsty. Carry momentum; short throttle bursts.',
+    debris: 'SHARP DEBRIS · Slows you hard. Crawl or jump clear — speed punctures the tank.',
+    repair: 'REPAIR STOP · Seal leaks and collect 20% emergency fuel.',
+    police: 'POLICE CHECKPOINT · Brake, release Gas, and stop briefly. Ramming costs fuel.',
+    bridge: 'BRIDGE · Level the nose on the deck. Tip and the gorge ends the run.',
+  };
   // Return this feature's instruction.
   return advice[next.type];
 // Finish the warning helper.

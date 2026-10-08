@@ -261,6 +261,8 @@ export default function App() {
             onToggleMute={onToggleMute}
             // Freeze driving while the settings dialog is open.
             onOpenSettings={onOpenSettings}
+            // From Pause, leave the run and open the start card again.
+            onMenu={onMenu}
           />
           {/* A short control reminder. Hidden on short phones so the road keeps the space. */}
           <p className="terrain-cue">{challenge}</p>

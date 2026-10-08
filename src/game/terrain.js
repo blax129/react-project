@@ -28,6 +28,12 @@ export const CHALLENGES = [
     advice: 'Brake before the drop. Match your tilt to the landing.',
     profile: [[0,0],[140,0],[650,65],[700,65],[790,-35],[960,-35],[1540,45],[1600,45],[1690,-15],[2100,0],[2200,0]],
   },
+  // Elevated deck over a gorge — tip or crawl and the drop ends the run.
+  {
+    name: 'Bridge run',
+    advice: 'Build speed onto the deck. Keep the nose level — tip and you fall into the gorge.',
+    profile: [[0,0],[160,0],[380,58],[460,58],[1080,58],[1160,58],[1280,-130],[1480,-130],[1900,10],[2200,0]],
+  },
 ];
 
 // The first circuit teaches the four obstacles. Later circuits keep escalating.
@@ -45,7 +51,8 @@ export function difficultyLabel(x) {
   const score = Math.max(0, Math.floor((x - 40) / METERS));
   if (score >= 1000) return 'Extreme';
   if (score >= 500) return 'Expert';
-  if (x >= CHALLENGE_START + CHALLENGES.length * SECTION_LENGTH) return 'Hard';
+  // Hard begins after the opening circuit of challenge types (~four sections).
+  if (x >= CHALLENGE_START + 4 * SECTION_LENGTH) return 'Hard';
   return '';
 }
 

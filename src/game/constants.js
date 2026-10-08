@@ -22,30 +22,30 @@ export const BRAKE = 480;
 export const MAX_SPEED = 380;
 // Reverse stays slower than the 380 forward cap, but 260 is fast enough that Left clearly travels back along the road.
 export const MAX_REVERSE = 260;
-// Fuel burned each second the gas pedal is held.
-export const FUEL_BURN = 4;
+// Fuel burned each second the gas pedal is held. Higher = empties faster.
+export const FUEL_BURN = 4.35;
 // A full tank.
 export const FUEL_MAX = 100;
-// A fuel can puts this much back in the tank.
-export const CAN_FUEL = 34;
+// A fuel can puts this much back in the tank. Slightly less refill = more tension.
+export const CAN_FUEL = 30;
 // How close the korope must be to pick up a can.
 export const CAN_REACH = 68;
 // The first can appears after this much road.
 export const FIRST_CAN = 520;
 // Cans are about this far apart. The gap grows a little with distance.
-export const CAN_GAP = 900;
+export const CAN_GAP = 960;
 // Nose-up pull from the gas while airborne, in radians per second squared.
 export const WHEELIE = 22;
 // Nose-down pull from the brake while airborne, in radians per second squared.
 export const NOSE_DOWN = 22;
 // How fast the wheels settle back onto the slope.
 export const STICK = 4;
-// Half a turn from the slope. Past this, the roof faces the road and the korope is upside down.
-export const TUMBLE = Math.PI / 2;
+// Past this lean from the slope, the roof hits and the run ends. Under 90° flips sooner.
+export const TUMBLE = Math.PI * 0.44;
 // A stopped, empty tank ends the run after this many seconds.
-export const STOP_TIME = 0.55;
-// Speed below this counts as stopped.
-export const STOP_SPEED = 22;
+export const STOP_TIME = 0.35;
+// Speed below this counts as stopped — higher makes empty-tank losses come sooner.
+export const STOP_SPEED = 34;
 // Distance divided by this number is the score. 42 is a long stretch, so the number climbs slowly.
 export const METERS = 42;
 // The biggest score the leaderboard will store.

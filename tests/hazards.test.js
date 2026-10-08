@@ -32,16 +32,16 @@ test('debris punctures once at speed, drains over time, and rewards slowing or j
   const fast = at('debris'); fast.vx = 180;
   // Apply the initial ground contact.
   stepHazards(fast, 1/120, true, {gas:true});
-  // The hit should start a leak with one immediate twelve-unit loss.
-  assert.equal(fast.leaking, true); assert.equal(fast.fuel, 88);
+  // The hit should start a leak with one immediate eighteen-unit loss.
+  assert.equal(fast.leaking, true); assert.equal(fast.fuel, 82);
   // Remaining on the patch should apply only the ongoing leak.
   stepHazards(fast, 1, true, {gas:true});
-  // A one-second leak costs 1.8 units rather than another impact penalty.
-  assert.ok(Math.abs(fast.fuel - 86.2) < 1e-9);
+  // A one-second leak costs 2.7 units rather than another impact penalty.
+  assert.ok(Math.abs(fast.fuel - 79.3) < 1e-9);
   // The HUD must explain the emergency.
   assert.match(hazardCue(fast), /FUEL LEAK/);
-  // Test the safe low-speed alternative.
-  const slow = at('debris'); slow.vx = 80;
+  // Test the safe low-speed alternative (crawl below the puncture threshold).
+  const slow = at('debris'); slow.vx = 50;
   // Gentle ground contact should not puncture the tank.
   stepHazards(slow, 1/120, true, {});
   // Both fuel and leak state must remain unchanged.

@@ -112,10 +112,10 @@ export default function StartScreen({ muted, onToggleMute, onStart, onBoard, onR
   return (
     // The cream panel.
     <section className="panel start-panel">
-      {/* The game name. */}
-      <h1>Road Clear</h1>
+      {/* The game name — centered as the hero brand on the start card. */}
+      <h1 className="game-title">Road Clear</h1>
       {/* What the player is about to do. */}
-      <p className="lead">
+      <p className="lead start-lead">
         Drive through 30 Lagos-inspired areas, from Festac through Iyana Iba to Ikeja. Pick your ride and make every drop of fuel count.
       {/* Closes this sentence. */}
       </p>
@@ -185,7 +185,7 @@ export default function StartScreen({ muted, onToggleMute, onStart, onBoard, onR
         {/* Pause. */}
         <li>Press P, or the Pause button, to pause and resume.</li>
         {/* Explain how to respond to the newly marked road hazards. */}
-        <li>Carry momentum through mud; sustained Gas burns extra fuel. Crawl over sharp debris or jump clear. Green repair stops seal leaks and restore 20% fuel.</li>
+        <li>Mud sticks hard and burns fuel. Debris slows you and can puncture the tank — crawl or jump clear. Bridges need a level nose; tip and the gorge ends the run. Green repair stops seal leaks and restore fuel.</li>
         {/* Police reward a controlled stop instead of a fast barrier impact. */}
         <li>At police checkpoints, brake, release Gas, and stop briefly for the barrier to open. Ramming the gate wastes 12% fuel.</li>
       {/* Closes the control list. */}

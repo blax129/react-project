@@ -543,7 +543,7 @@ function drawHazards(ctx, run) {
       // Mud is brown; sharp debris is bright orange.
       ctx.strokeStyle = hazard.type === 'mud' ? '#775136' : '#ffbd72';
       // Thick patches remain visible on phone screens.
-      ctx.lineWidth = hazard.type === 'mud' ? 14 : 7;
+      ctx.lineWidth = hazard.type === 'mud' ? 16 : 9;
       // Begin the road-following patch.
       ctx.beginPath();
       // Sample the same road curve used by collision detection.
@@ -559,11 +559,11 @@ function drawHazards(ctx, run) {
         // Bright metal stays visible against night-time terrain.
         ctx.fillStyle = '#ffd4a0';
         // Place several visible spikes across the patch.
-        for (let x = hazard.x; x < hazard.x + hazard.width; x += 20) {
+        for (let x = hazard.x; x < hazard.x + hazard.width; x += 18) {
           // Position each triangle on the road.
           const y = groundY(x);
           // Outline a short, sharp piece of debris.
-          ctx.beginPath(); ctx.moveTo(x - 6, y); ctx.lineTo(x, y - 13); ctx.lineTo(x + 6, y); ctx.closePath();
+          ctx.beginPath(); ctx.moveTo(x - 7, y); ctx.lineTo(x, y - 15); ctx.lineTo(x + 7, y); ctx.closePath();
           // Fill the triangle.
           ctx.fill();
         // Finish the debris pieces.
@@ -572,18 +572,38 @@ function drawHazards(ctx, run) {
       }
     // Finish the road patch.
     }
+    // Draw piers and a plank deck so bridges read before the gorge.
+    if (hazard.type === 'bridge') {
+      const left = hazard.x;
+      const right = hazard.x + hazard.width;
+      const mid = (left + right) / 2;
+      const deckY = Math.min(groundY(left), groundY(mid), groundY(right)) - 4;
+      // Concrete piers under the span.
+      ctx.fillStyle = '#5a5348';
+      for (let px = left + 40; px < right; px += 90) {
+        const ground = groundY(px);
+        ctx.fillRect(px - 10, deckY, 20, Math.max(24, ground - deckY + 8));
+      }
+      // Plank deck across the span.
+      ctx.fillStyle = '#8b7355';
+      ctx.fillRect(left, deckY - 8, hazard.width, 12);
+      // Rail edges so the bridge silhouette is clear.
+      ctx.fillStyle = '#3d3428';
+      ctx.fillRect(left, deckY - 18, hazard.width, 4);
+      ctx.fillRect(left, deckY + 4, hazard.width, 3);
+    }
     // Put the sign above the feature's starting point.
     const y = groundY(hazard.x);
-    // Repair signs are green; police signs are blue; hazards use amber.
-    ctx.fillStyle = hazard.type === 'repair' ? '#145c43' : hazard.type === 'police' ? '#163b67' : '#50381e';
+    // Repair signs are green; police blue; bridges slate; other hazards amber.
+    ctx.fillStyle = hazard.type === 'repair' ? '#145c43' : hazard.type === 'police' ? '#163b67' : hazard.type === 'bridge' ? '#2f3d4a' : '#50381e';
     // Choose a compact label that explains the visible object.
-    const label = hazard.type === 'police' ? 'POLICE · STOP' : hazard.type === 'repair' ? 'REPAIR +20' : hazard.type === 'mud' ? 'MUD' : 'SHARP DEBRIS';
+    const label = hazard.type === 'police' ? 'POLICE · STOP' : hazard.type === 'repair' ? 'REPAIR +20' : hazard.type === 'mud' ? 'MUD' : hazard.type === 'bridge' ? 'BRIDGE · LEVEL NOSE' : 'SHARP DEBRIS';
     // Give each warning a dark backing for readability.
-    ctx.fillRect(hazard.x - 24, y - 95, 150, 29);
+    ctx.fillRect(hazard.x - 24, y - 95, hazard.type === 'bridge' ? 168 : 150, 29);
     // Use light text on every sign.
     ctx.fillStyle = '#ffffff'; ctx.font = 'bold 15px sans-serif'; ctx.textAlign = 'center';
     // Centre the warning inside its backing.
-    ctx.fillText(label, hazard.x + 51, y - 75);
+    ctx.fillText(label, hazard.x + (hazard.type === 'bridge' ? 60 : 51), y - 75);
     // Police checkpoints include a visible striped barrier and officer.
     if (hazard.type === 'police') {
       // Match the physical stopping line.

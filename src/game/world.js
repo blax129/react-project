@@ -174,8 +174,10 @@ export function stepRun(run, dt, controls) {
   // Either back control is enough to roll the other way.
   const backHeld = Boolean(controls.brake) || Boolean(controls.left);
   const grounded = run.wheels.some(w => tireSunk(run, w) > -2);
-  // Mud only changes traction while a tire touches the road.
+  // Mud and debris only change traction while a tire touches the road.
   const mud = grounded && activeHazard(run, "mud");
+  // Sharp debris also scrubs speed so racing through it is costly even before a puncture.
+  const debris = grounded && activeHazard(run, "debris");
   const first = run.wheels[0], last = run.wheels.at(-1);
   // Align to the wheel footprint, not a single bump below the centre.
   const hill = Math.atan2(roadY(run.x+last.x)-roadY(run.x+first.x)
@@ -190,7 +192,8 @@ export function stepRun(run, dt, controls) {
   if (grounded && drive) {
     const uphillLoad = Math.max(0, -Math.sin(hill) * drive);
     const cruiseLoad = Math.min(1, Math.abs(tangentSpeed) / vehicle.maxSpeed);
-    run.fuel = Math.max(0,run.fuel-vehicle.fuelBurn*(.65 + cruiseLoad*.25 + uphillLoad*.5)*(mud ? 2.4 : 1)*step);
+    // Mud drinks fuel harder so crawling through it empties the tank.
+    run.fuel = Math.max(0,run.fuel-vehicle.fuelBurn*(.65 + cruiseLoad*.25 + uphillLoad*.5)*(mud ? 3.2 : 1)*step);
   }
 
   // In the air the pedals spin the ride. On the road they lean it and also drive.
@@ -234,14 +237,22 @@ export function stepRun(run, dt, controls) {
     run.vy += Math.sin(hill)*change;
   } else if (grounded && drive) {
     const lowGear = drive > 0 ? 1 + .45 * Math.max(0, 1 - Math.abs(tangentSpeed)/100) : 1;
-    const push = vehicle.accel * lowGear * (mud ? 1 - .28 * Math.min(1, Math.abs(tangentSpeed)/120) : 1) * (drive < 0 ? 0.65 : 1) * drive * step;
+    // Mud and debris cut push so you feel the sticky / sharp surface under the wheels.
+    const surfacePush = mud
+      ? 1 - 0.48 * Math.min(1, Math.abs(tangentSpeed) / 100)
+      : debris
+        ? 1 - 0.38 * Math.min(1, Math.abs(tangentSpeed) / 90)
+        : 1;
+    const push = vehicle.accel * lowGear * surfacePush * (drive < 0 ? 0.65 : 1) * drive * step;
     run.vx += Math.cos(hill)*push;
     run.vy += Math.sin(hill)*push;
   }
   // Tires scrub speed. Air does not.
   if (grounded) {
-    // Drag for this short step, stronger on heavy rides.
-    const drag = Math.exp(-vehicle.drag * (mud ? 2.2 : 1) * step);
+    // Mud sticks hardest; debris also drags the ride down before a puncture.
+    const surfaceDrag = mud ? 3.6 : debris ? 2.8 : 1;
+    // Drag for this short step, stronger on heavy rides and bad surfaces.
+    const drag = Math.exp(-vehicle.drag * surfaceDrag * step);
     // Slows the horizontal part.
     run.vx *= drag;
     // Slows the vertical part.
