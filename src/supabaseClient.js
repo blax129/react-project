@@ -1,10 +1,12 @@
 // The browser library that talks to Supabase.
 import { createClient } from "@supabase/supabase-js";
+// Public URL + anon key baked for hosts that forget Netlify env vars.
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from "./supabasePublic";
 
-// The project URL from the env file. Empty when the file was not filled in.
-const url = import.meta.env.VITE_SUPABASE_URL;
-// The public anon key from the env file. Empty when the file was not filled in.
-const key = import.meta.env.VITE_SUPABASE_ANON_KEY;
+// Prefer Vite env when set; otherwise use the committed public values.
+const url = import.meta.env.VITE_SUPABASE_URL || SUPABASE_URL;
+// The anon key is safe in the browser; never add the service-role key here.
+const key = import.meta.env.VITE_SUPABASE_ANON_KEY || SUPABASE_ANON_KEY;
 // True only when both values are real, not the sample text from .env.example.
 const ready = Boolean(url && key && !url.includes("YOUR_PROJECT_REF") && key !== "your-anon-key");
 

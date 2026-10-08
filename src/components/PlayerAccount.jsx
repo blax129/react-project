@@ -237,38 +237,38 @@ export default function PlayerAccount() {
             <small>Current name on this browser. Type a new one below to switch.</small>
           </p>
         ) : null}
-        {/* Do not pretend a local preview can reserve names globally. */}
-        {!supabase ? (
-          <p className="error">Shared usernames are not configured yet. You can still play.</p>
-        ) : (
-          <form className="player-form" onSubmit={submit}>
-            {/* Collect only the short public nickname. */}
-            <label className="field player-name-field" htmlFor="player-username">
-              Username
-              {/* A full-width box so the typing area is obvious on every screen. */}
-              <input
-                id="player-username"
-                ref={inputRef}
-                className="player-name-input"
-                type="text"
-                value={nickname}
-                onChange={(event) => setNickname(event.target.value)}
-                maxLength={16}
-                required
-                autoComplete="off"
-                autoCapitalize="off"
-                spellCheck={false}
-                placeholder="Type your username"
-                disabled={busy}
-              />
-            </label>
-            <small className="player-name-hint">1–16 letters, numbers, spaces or hyphens.</small>
-            {/* The server atomically reserves a name when this action succeeds. */}
-            <button className="button player-claim" disabled={busy || player.loading} type="submit">
-              {busy ? "Claiming…" : player.loading ? "Checking your name…" : player.name ? "Claim new username" : "Claim username"}
-            </button>
-          </form>
-        )}
+        {/* Always show the typing box so a missing backend never hides the field. */}
+        <form className="player-form" onSubmit={submit}>
+          {/* Collect only the short public nickname. */}
+          <label className="field player-name-field" htmlFor="player-username">
+            Username
+            {/* A full-width box so the typing area is obvious on every screen. */}
+            <input
+              id="player-username"
+              ref={inputRef}
+              className="player-name-input"
+              type="text"
+              value={nickname}
+              onChange={(event) => setNickname(event.target.value)}
+              maxLength={16}
+              required
+              autoComplete="off"
+              autoCapitalize="off"
+              spellCheck={false}
+              placeholder="Type your username"
+              disabled={busy || !supabase}
+            />
+          </label>
+          <small className="player-name-hint">1–16 letters, numbers, spaces or hyphens.</small>
+          {/* Do not pretend a local preview can reserve names globally. */}
+          {!supabase ? (
+            <p className="error">Shared usernames are not configured on this site yet. You can still play as a guest.</p>
+          ) : null}
+          {/* The server atomically reserves a name when this action succeeds. */}
+          <button className="button player-claim" disabled={busy || player.loading || !supabase} type="submit">
+            {busy ? "Claiming…" : player.loading ? "Checking your name…" : player.name ? "Claim new username" : "Claim username"}
+          </button>
+        </form>
         {/* Clearly explain the browser-only recovery limitation before claiming. */}
         <p className="note">
           Keep using this browser to keep your name. Clearing its data, using private browsing or switching phones loses
